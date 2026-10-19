@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Homework Checker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f4f6fb; --card:#ffffff; --ink:#1b2333; --muted:#5d6780; --line:#dde2ee;
+  --brand:#2b5cd6; --brand-ink:#ffffff; --brand-soft:#e6edfd;
+  --good:#1f8a4c; --good-bg:#e3f6ea; --part:#a86a00; --part-bg:#fff3d6; --bad:#c23b3b; --bad-bg:#fde8e8;
+  --shadow:0 2px 10px rgba(20,30,60,.07);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#11151f; --card:#1a2030; --ink:#e8ecf5; --muted:#9aa4bd; --line:#2c3447;
+    --brand:#6b93f5; --brand-ink:#0d1220; --brand-soft:#223055;
+    --good:#5fd38f; --good-bg:#16382a; --part:#f2c25b; --part-bg:#3a2f12; --bad:#f08a8a; --bad-bg:#3d1c1c;
+    --shadow:none;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Lexend,system-ui,sans-serif;font-size:17px;line-height:1.45}
+.wrap{max-width:760px;margin:0 auto;padding:20px 16px 40px}
+header.top{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.bot{width:44px;height:44px;flex:none}
+h1{font-size:1.45rem;margin:0}
+.sub{color:var(--muted);font-size:.92rem;margin:0}
+h2{font-size:1.15rem;margin:0 0 12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:var(--shadow);margin-bottom:14px}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.big{display:block;width:100%;text-align:left;background:var(--card);border:2px solid var(--line);border-radius:14px;padding:18px;font:inherit;color:inherit;cursor:pointer}
+.big:hover,.big:focus-visible{border-color:var(--brand);outline:none}
+.big strong{display:block;font-size:1.15rem}
+.big span{color:var(--muted);font-size:.9rem}
+.crumbs{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+button{font:inherit}
+.btn{background:var(--brand);color:var(--brand-ink);border:none;border-radius:10px;padding:10px 16px;font-weight:600;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--brand);border:2px solid var(--brand-soft)}
+.btn.small{padding:6px 11px;font-size:.88rem}
+.btn.danger{background:transparent;color:var(--bad);border:2px solid var(--bad-bg)}
+.btn:disabled{opacity:.5;cursor:default}
+.prob{display:grid;grid-template-columns:64px 1fr auto;gap:10px;align-items:center;padding:12px 0;border-top:1px solid var(--line)}
+.prob:first-of-type{border-top:none}
+.plabel{font-weight:700;font-size:1.1rem}
+.note{grid-column:2/4;color:var(--muted);font-size:.85rem;margin-top:-6px}
+input[type=text],textarea,select,input[type=number]{font:inherit;color:var(--ink);background:var(--bg);border:2px solid var(--line);border-radius:10px;padding:9px 11px;width:100%}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--brand)}
+.result{grid-column:2/4;border-radius:10px;padding:8px 12px;font-weight:600;font-size:.95rem;display:none}
+.result.show{display:block}
+.r-good{background:var(--good-bg);color:var(--good)}
+.r-part{background:var(--part-bg);color:var(--part)}
+.r-bad{background:var(--bad-bg);color:var(--bad)}
+.r-empty{background:var(--brand-soft);color:var(--brand)}
+.summary{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.pill{border-radius:999px;padding:5px 12px;font-weight:600;font-size:.9rem}
+.tip{background:var(--brand-soft);border-radius:12px;padding:12px 14px;font-size:.92rem;margin-bottom:14px}
+footer{text-align:center;color:var(--muted);font-size:.8rem;margin-top:24px}
+.empty{color:var(--muted);text-align:center;padding:20px}
+/* teacher */
+.tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.tab{background:var(--card);border:2px solid var(--line);border-radius:10px;padding:8px 14px;cursor:pointer;font-weight:600;color:var(--ink)}
+.tab.on{border-color:var(--brand);background:var(--brand-soft)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.keyrow{display:grid;grid-template-columns:70px 1fr 1fr 34px;gap:8px;margin-bottom:8px;align-items:center}
+.keyhead{font-size:.8rem;color:var(--muted);font-weight:600}
+.x{background:none;border:none;color:var(--bad);font-size:1.3rem;cursor:pointer}
+.hwitem{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.hwitem:first-child{border-top:none}
+.muted{color:var(--muted);font-size:.88rem}
+details summary{cursor:pointer;font-weight:600}
+code{background:var(--brand-soft);padding:1px 5px;border-radius:5px;font-size:.88em}
+@media (max-width:520px){
+  .prob{grid-template-columns:48px 1fr}
+  .prob .btn{grid-column:2}
+  .note,.result{grid-column:1/3}
+  .keyrow{grid-template-columns:52px 1fr 30px}
+  .keyrow .knote{grid-column:2/3}
+}
+</style>
+<script src="homework.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <svg class="bot" viewBox="0 0 48 48" aria-hidden="true"><rect x="8" y="12" width="32" height="26" rx="8" fill="var(--brand)"/><rect x="22" y="4" width="4" height="9" rx="2" fill="var(--brand)"/><circle cx="24" cy="4" r="3.5" fill="var(--part)"/><circle cx="18" cy="24" r="4" fill="var(--card)"/><circle cx="30" cy="24" r="4" fill="var(--card)"/><rect x="17" y="31" width="14" height="3" rx="1.5" fill="var(--card)"/><rect x="3" y="20" width="5" height="10" rx="2.5" fill="var(--brand)"/><rect x="40" y="20" width="5" height="10" rx="2.5" fill="var(--brand)"/></svg>
+    <div>
+      <h1 id="title">Homework Checker</h1>
+      <p class="sub" id="subtitle">Check your answers. It tells you if you're right — not the answer.</p>
+    </div>
+  </header>
+  <main id="app"></main>
+  <footer>Made by Mr. Lovrien 2026</footer>
+</div>
+
+<script id="core">
+/* ===== Shared answer logic (used by student AND teacher side) ===== */
+var HWC = (function(){
+  var FRAC = {'½':'1/2','⅓':'1/3','⅔':'2/3','¼':'1/4','¾':'3/4','⅕':'1/5','⅖':'2/5','⅗':'3/5','⅘':'4/5','⅙':'1/6','⅚':'5/6','⅛':'1/8','⅜':'3/8','⅝':'5/8','⅞':'7/8'};
+
+  function cyrb53(str, seed){
+    var h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
+    for (var i = 0, ch; i < str.length; i++){
+      ch = str.charCodeAt(i);
+      h1 = Math.imul(h1 ^ ch, 2654435761);
+      h2 = Math.imul(h2 ^ ch, 1597334677);
+    }
+    h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+    h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+    return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(36);
+  }
+  function hash(salt, canon){ return cyrb53(salt + '|' + canon, 7); }
+
+  function numCanon(v){
+    var r = Math.round(v * 100) / 100;
+    if (Object.is(r, -0)) r = 0;
+    return 'n:' + r;
+  }
+
+  function canon(c){
+    var s = String(c).toLowerCase().trim().replace(/\.$/, '');
+    // mixed number like "1 1/2" or "-2 3/4"
+    var m = s.match(/^(-?)\s*(\d+)\s+(\d+)\s*\/\s*(\d+)$/);
+    if (m && +m[4] !== 0) return numCanon((m[1] ? -1 : 1) * (+m[2] + (+m[3]) / (+m[4])));
+    s = s.replace(/\bis\s+similar\s+to\b/g, '~').replace(/\btriangle\b/g, '');
+    s = s.replace(/\s+/g, '');
+    s = s.replace(/^answer:|^ans:/, '');
+    s = s.replace(/[△δ∆]/g, '').replace(/[∼≈]/g, '~');
+    s = s.replace(/^m?∠[a-z]{1,3}=/, '');          // m∠A = 50 -> 50
+    // similarity statement: ABC~EFD == BCA~FDE == EFD~ABC ...
+    var sim = s.match(/^([a-z]{3})~([a-z]{3})$/);
+    if (sim){
+      var key = function(L, R){
+        return [0,1,2].map(function(i){ return [L[i], R[i]]; })
+          .sort(function(a, b){ return a[0] < b[0] ? -1 : 1; })
+          .reduce(function(o, p){ o[0] += p[0]; o[1] += p[1]; return o; }, ['', '']).join('~');
+      };
+      var k1 = key(sim[1], sim[2]), k2 = key(sim[2], sim[1]);
+      return 's:' + (k1 < k2 ? k1 : k2);
+    }
+    if (/^(yes|y|yessimilar|similar|theyaresimilar)$/.test(s)) return 't:yes';
+    if (/^(no|n|nosimilar|notsimilar|theyarenotsimilar)$/.test(s)) return 't:no';
+    s = s.replace(/^[a-z]=(?=.)/, '');          // x=4 -> 4
+    s = s.replace(/^(.+?)=[a-z]$/, '$1');        // 4=x -> 4
+    s = s.replace(/\$/g, '').replace(/°|degrees?$/g, '');
+    // strip units: 12cm, 25%, 40ft², 3units
+    s = s.replace(/^(-?\d*\.?\d+(?:\/\d*\.?\d+)?)(?:[a-z]{2,}(?:\^?[23])?|%|²|³)$/, '$1');
+    s = s.replace(/^\+(?=\d)/, '');
+    if (/^-?\d*\.?\d+$/.test(s)) return numCanon(parseFloat(s));
+    var f = s.match(/^(-?\d*\.?\d+)\/(-?\d*\.?\d+)$/);
+    if (f && parseFloat(f[2]) !== 0) return numCanon(parseFloat(f[1]) / parseFloat(f[2]));
+    if (/^(no(real)?solutions?|none|∅|nosol)$/.test(s)) return 't:nosolution';
+    if (/^(infinite(ly)?(many)?(solutions?)?|allrealnumbers|allreals|manysolutions)$/.test(s)) return 't:infinite';
+    if (/^(one|1|exactlyone)solutions?$/.test(s)) return 't:onesolution';
+    return 't:' + s;
+  }
+
+  // One blank -> list of canonical pieces (for coordinates, systems, multiple answers)
+  function pieces(raw){
+    var s = String(raw == null ? '' : raw).trim();
+    s = s.replace(/[−–—]/g, '-').replace(/[×·]/g, '*').replace(/÷/g, '/')
+         .replace(/≤/g, '<=').replace(/≥/g, '>=').replace(/≠/g, '!=');
+    Object.keys(FRAC).forEach(function(g){ s = s.split(g).join(' ' + FRAC[g]); });
+    s = s.trim();
+    var wrapped = /^[\(\[\{].*[\)\]\}]$/.test(s) && !/[\(\)\[\]\{\}]/.test(s.slice(1, -1));
+    if (wrapped) s = s.slice(1, -1);
+    else s = s.replace(/\b\d{1,3}(,\d{3})+\b/g, function(x){ return x.replace(/,/g, ''); });
+    var out = s.split(/,|\band\b/i).map(function(p){ return p.trim(); })
+            .filter(function(p){ return p.length; }).map(canon);
+    // "no, not similar" / "yes, they are similar" -> one answer
+    if (out.length > 1 && out.every(function(p){ return p === out[0]; }) && /^t:(yes|no)$/.test(out[0])) out = [out[0]];
+    return out;
+  }
+
+  // Teacher: "answer | alternate | alternate"  ->  [[hash,...], ...]
+  function buildAlts(answer, salt){
+    return String(answer).split('|').map(function(a){ return a.trim(); })
+      .filter(function(a){ return a.length; })
+      .map(function(a){ return pieces(a).map(function(p){ return hash(salt, p); }); })
+      .filter(function(a){ return a.length; });
+  }
+
+  // Student: returns 'correct' | 'partial' | 'incorrect' | 'empty'
+  function check(input, alts, salt){
+    var mine = pieces(input).map(function(p){ return hash(salt, p); });
+    if (!mine.length) return 'empty';
+    var partial = false;
+    for (var i = 0; i < alts.length; i++){
+      var alt = alts[i], right = 0;
+      for (var j = 0; j < alt.length; j++) if (mine[j] === alt[j]) right++;
+      if (right === alt.length && mine.length === alt.length) return 'correct';
+      if (right > 0) partial = true;
+      else if (alt.length > 1 && mine.some(function(h){ return alt.indexOf(h) > -1; })) partial = true;
+    }
+    return partial ? 'partial' : 'incorrect';
+  }
+
+  return { buildAlts: buildAlts, check: check, pieces: pieces };
+})();
+if (typeof module !== 'undefined') module.exports = HWC;
+</script>
+
+<script>
+var CLASSES = [
+  { id: 'regular', name: '8th Grade Math', blurb: 'Regular math' },
+  { id: 'accelerated', name: '8th Accelerated', blurb: 'Accelerated / Integrated Math I' }
+];
+var params = new URLSearchParams(location.search);
+var app = document.getElementById('app');
+
+function store(key, val){
+  try {
+    if (val === undefined){ var v = localStorage.getItem(key); return v ? JSON.parse(v) : null; }
+    localStorage.setItem(key, JSON.stringify(val));
+  } catch(e){ return null; }
+}
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function el(html){ var d = document.createElement('div'); d.innerHTML = html.trim(); return d.firstChild; }
+function className(id){ var c = CLASSES.find(function(x){ return x.id === id; }); return c ? c.name : id; }
+
+/* ===================== STUDENT SIDE ===================== */
+var student = { data: null, cls: null, hw: null, preview: false };
+
+function startStudent(data, preview){
+  student.data = data; student.preview = !!preview;
+  var pre = params.get('class');
+  student.cls = (pre && data && data.classes[pre]) ? pre : null;
+  student.hw = null;
+  renderStudent();
+}
+
+function renderStudent(){
+  document.getElementById('title').textContent = 'Homework Checker';
+  document.getElementById('subtitle').textContent = "Check your answers. It tells you if you're right — not the answer.";
+  app.innerHTML = '';
+  if (student.preview){
+    var bar = el('<div class="tip"><strong>Preview mode</strong> — this is what students will see. <button class="btn small" id="exitPrev">Back to teacher</button></div>');
+    app.appendChild(bar);
+    bar.querySelector('#exitPrev').onclick = function(){ startTeacher(); };
+  }
+  var data = student.data;
+  if (!data || !data.classes){
+    app.appendChild(el('<div class="card empty">No homework has been posted yet. Check back soon!</div>'));
+    return;
+  }
+  if (!student.cls) return renderPickClass();
+  if (!student.hw) return renderPickHW();
+  renderProblems();
+}
+
+function renderPickClass(){
+  var card = el('<div class="card"><h2>1. Pick your class</h2><div class="grid"></div></div>');
+  var g = card.querySelector('.grid');
+  CLASSES.forEach(function(c){
+    var b = el('<button class="big"><strong>' + esc(c.name) + '</strong><span>' + esc(c.blurb) + '</span></button>');
+    b.onclick = function(){ student.cls = c.id; renderStudent(); };
+    g.appendChild(b);
+  });
+  app.appendChild(card);
+}
+
+function renderPickHW(){
+  var list = (student.data.classes[student.cls] || []).slice().sort(function(a, b){ return b.num - a.num; });
+  var crumbs = el('<div class="crumbs"><button class="btn ghost small">← Change class</button><strong>' + esc(className(student.cls)) + '</strong></div>');
+  crumbs.querySelector('button').onclick = function(){ student.cls = null; renderStudent(); };
+  app.appendChild(crumbs);
+  var card = el('<div class="card"><h2>2. Pick your homework</h2><div class="grid"></div></div>');
+  var g = card.querySelector('.grid');
+  if (!list.length) g.parentNode.appendChild(el('<div class="empty">No homework posted for this class yet.</div>'));
+  list.forEach(function(hw){
+    var b = el('<button class="big"><strong>HW ' + esc(hw.num) + '</strong><span>' + esc(hw.title || (hw.problems.length + ' problems')) + '</span></button>');
+    b.onclick = function(){ student.hw = hw; renderStudent(); };
+    g.appendChild(b);
+  });
+  app.appendChild(card);
+}
+
+var MSG = {
+  correct: ['r-good', '✓ Correct! Nice work.'],
+  partial: ['r-part', '◐ Partly correct. Some of it is right — check your work.'],
+  incorrect: ['r-bad', '✗ Not yet. Look back at your work and try again.'],
+  empty: ['r-empty', 'Type an answer first.']
+};
+
+function renderProblems(){
+  var hw = student.hw, salt = student.cls + '-' + hw.id;
+  var saveKey = 'hwc-ans-' + salt;
+  var saved = store(saveKey) || {};
+  var crumbs = el('<div class="crumbs"><button class="btn ghost small">← All homework</button><strong>' + esc(className(student.cls)) + ' · HW ' + esc(hw.num) + '</strong></div>');
+  crumbs.querySelector('button').onclick = function(){ student.hw = null; renderStudent(); };
+  app.appendChild(crumbs);
+  app.appendChild(el('<div class="tip">Type your answer and press <strong>Check</strong>. Fractions like <code>3/4</code> or decimals like <code>0.75</code> both work. For points, type <code>(2, 5)</code>.</div>'));
+
+  var card = el('<div class="card"><h2>' + esc(hw.title || 'HW ' + hw.num) + '</h2><div class="probs"></div><div class="row" style="margin-top:14px"><button class="btn" id="checkAll">Check all</button><button class="btn ghost" id="clearAll">Clear</button></div><div class="summary" id="summary"></div></div>');
+  var box = card.querySelector('.probs');
+  var results = {};
+
+  hw.problems.forEach(function(p, i){
+    var id = 'p' + i;
+    var row = el('<div class="prob">' +
+      '<label class="plabel" for="' + id + '">' + esc(p.label) + '.</label>' +
+      '<input type="text" id="' + id + '" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Your answer">' +
+      '<button class="btn small">Check</button>' +
+      (p.note ? '<div class="note">' + esc(p.note) + '</div>' : '') +
+      '<div class="result" role="status"></div></div>');
+    var input = row.querySelector('input'), res = row.querySelector('.result');
+    input.value = saved[p.label] || '';
+    function run(){
+      var r = HWC.check(input.value, p.alts, salt);
+      res.className = 'result show ' + MSG[r][0];
+      res.textContent = MSG[r][1];
+      results[i] = r;
+      updateSummary();
+    }
+    row.querySelector('button').onclick = run;
+    input.addEventListener('keydown', function(e){ if (e.key === 'Enter') run(); });
+    input.addEventListener('input', function(){
+      saved[p.label] = input.value; store(saveKey, saved);
+      res.className = 'result'; delete results[i]; updateSummary();
+    });
+    row._run = run;
+    box.appendChild(row);
+  });
+
+  function updateSummary(){
+    var c = {correct:0, partial:0, incorrect:0};
+    Object.keys(results).forEach(function(k){ if (c[results[k]] != null) c[results[k]]++; });
+    var s = card.querySelector('#summary'); s.innerHTML = '';
+    if (!Object.keys(results).length) return;
+    s.appendChild(el('<span class="pill r-good">✓ ' + c.correct + ' correct</span>'));
+    if (c.partial) s.appendChild(el('<span class="pill r-part">◐ ' + c.partial + ' partly</span>'));
+    if (c.incorrect) s.appendChild(el('<span class="pill r-bad">✗ ' + c.incorrect + ' not yet</span>'));
+  }
+  card.querySelector('#checkAll').onclick = function(){
+    box.querySelectorAll('.prob').forEach(function(r){ if (r.querySelector('input').value.trim()) r._run(); });
+  };
+  card.querySelector('#clearAll').onclick = function(){
+    if (!confirm('Clear all your answers for this homework?')) return;
+    saved = {}; store(saveKey, saved); results = {};
+    box.querySelectorAll('input').forEach(function(i){ i.value = ''; });
+    box.querySelectorAll('.result').forEach(function(r){ r.className = 'result'; });
+    updateSummary();
+  };
+  app.appendChild(card);
+}
+
+/* ===================== TEACHER SIDE ===================== */
+var TKEY = 'hwc-teacher-v1';
+var T = store(TKEY) || { classes: { regular: [], accelerated: [] } };
+var tState = { cls: 'regular', editing: null };
+function saveT(){ store(TKEY, T); }
+function uid(){ return Math.random().toString(36).slice(2, 9); }
+
+function startTeacher(){
+  document.getElementById('title').textContent = 'Homework Checker — Teacher';
+  document.getElementById('subtitle').textContent = 'Add answer keys, then download homework.js and upload it to GitHub.';
+  app.innerHTML = '';
+  var tabs = el('<div class="tabs"></div>');
+  CLASSES.forEach(function(c){
+    var t = el('<button class="tab' + (tState.cls === c.id ? ' on' : '') + '">' + esc(c.name) + '</button>');
+    t.onclick = function(){ tState.cls = c.id; tState.editing = null; startTeacher(); };
+    tabs.appendChild(t);
+  });
+  app.appendChild(tabs);
+  if (tState.editing) renderEditor(); else renderHWList();
+  renderPublish();
+}
+
+function renderHWList(){
+  var list = T.classes[tState.cls];
+  var card = el('<div class="card"><div class="row" style="justify-content:space-between;margin-bottom:8px"><h2 style="margin:0">' + esc(className(tState.cls)) + ' homework</h2><button class="btn small" id="addHW">+ New homework</button></div><div id="hwlist"></div></div>');
+  var box = card.querySelector('#hwlist');
+  if (!list.length) box.appendChild(el('<div class="empty">No homework yet. Click <strong>+ New homework</strong>.</div>'));
+  list.slice().sort(function(a, b){ return a.num - b.num; }).forEach(function(hw){
+    var it = el('<div class="hwitem"><div><strong>HW ' + esc(hw.num) + '</strong> ' + esc(hw.title || '') +
+      '<div class="muted">' + hw.problems.length + ' problems' + (hw.hidden ? ' · hidden from students' : '') + '</div></div>' +
+      '<div class="row"><button class="btn small ghost" data-a="edit">Edit</button><button class="btn small danger" data-a="del">Delete</button></div></div>');
+    it.querySelector('[data-a=edit]').onclick = function(){ tState.editing = hw.id; startTeacher(); };
+    it.querySelector('[data-a=del]').onclick = function(){
+      if (!confirm('Delete HW ' + hw.num + '?')) return;
+      T.classes[tState.cls] = list.filter(function(h){ return h !== hw; }); saveT(); startTeacher();
+    };
+    box.appendChild(it);
+  });
+  card.querySelector('#addHW').onclick = function(){
+    var next = list.reduce(function(m, h){ return Math.max(m, +h.num || 0); }, 0) + 1;
+    var hw = { id: uid(), num: next, title: '', hidden: false, problems: [] };
+    list.push(hw); saveT(); tState.editing = hw.id; startTeacher();
+  };
+  app.appendChild(card);
+}
+
+function parseKey(text){
+  var out = [], last = null;
+  String(text).split(/\r?\n/).forEach(function(line){
+    var l = line.trim(); if (!l) return;
+    var m = l.match(/^(?:#|problem|prob\.?|q|question)?\s*(\d+\s*[a-z]?)\s*[\.\):\-]\s*(.+)$/i);
+    var sub = l.match(/^\(?([a-h])[\.\)]\s*(.+)$/i);
+    var ans;
+    if (m){
+      var label = m[1].replace(/\s+/g, '');
+      ans = m[2].trim();
+      var inner = ans.match(/^\(?([a-h])[\.\)]\s*(.+)$/i);   // "8. a) 12"
+      if (inner && /\d$/.test(label)){ label = label + inner[1].toLowerCase(); ans = inner[2]; }
+      last = label.replace(/[a-z]$/i, '');
+      out.push({ label: label, answer: cleanAns(ans), note: '' });
+    } else if (sub && last){
+      out.push({ label: last + sub[1].toLowerCase(), answer: cleanAns(sub[2]), note: '' });
+    }
+  });
+  return out;
+}
+function cleanAns(a){ return a.replace(/^(answer|ans)\s*[:\-]\s*/i, '').replace(/\s*\(\d+\s*pts?\)\s*$/i, '').trim(); }
+
+function loadMammoth(){
+  return new Promise(function(res, rej){
+    if (window.mammoth) return res(window.mammoth);
+    var s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js';
+    s.onload = function(){ res(window.mammoth); }; s.onerror = rej;
+    document.head.appendChild(s);
+  });
+}
+
+function renderEditor(){
+  var hw = T.classes[tState.cls].find(function(h){ return h.id === tState.editing; });
+  if (!hw){ tState.editing = null; return renderHWList(); }
+  var card = el('<div class="card">' +
+    '<div class="crumbs"><button class="btn ghost small" id="back">← Done</button><strong>' + esc(className(tState.cls)) + '</strong></div>' +
+    '<div class="row" style="margin-bottom:14px">' +
+      '<label style="flex:0 0 110px">HW #<input type="number" id="num" min="1"></label>' +
+      '<label style="flex:1 1 220px">Title (optional)<input type="text" id="ttl" placeholder="e.g. 4.2 Slope from tables"></label>' +
+      '<label class="row" style="flex:0 0 auto;gap:6px;margin-top:20px"><input type="checkbox" id="hid"> Hide from students</label>' +
+    '</div>' +
+    '<details open style="margin-bottom:14px"><summary>Import answer key</summary>' +
+      '<p class="muted">Paste your Math Maker answer key, or upload the answer key file (.docx or .txt). Lines like <code>1. 12</code>, <code>2) x = -3</code>, <code>5a. (2, 4)</code> are picked up. Check the list below after importing.</p>' +
+      '<textarea id="paste" rows="5" placeholder="1. 12&#10;2. x = -3&#10;3. 3/4&#10;4. no solution&#10;5. (2, 5)"></textarea>' +
+      '<div class="row" style="margin-top:8px"><button class="btn small" id="doPaste">Add from paste</button><label class="btn small ghost" style="cursor:pointer">Upload file<input type="file" id="file" accept=".docx,.txt,.csv" hidden></label><label class="row muted" style="gap:6px"><input type="checkbox" id="replace" checked> Replace current list</label></div>' +
+    '</details>' +
+    '<h2>Answers</h2>' +
+    '<div class="keyrow keyhead"><span>Problem</span><span>Answer</span><span class="knote">Note students see (optional)</span><span></span></div>' +
+    '<div id="rows"></div>' +
+    '<div class="row"><button class="btn small ghost" id="addRow">+ Add problem</button></div>' +
+    '<details style="margin-top:14px"><summary>How answers are checked</summary><div class="muted" style="margin-top:8px">' +
+      '• Equal numbers match: <code>3/4</code> = <code>0.75</code> = <code>¾</code>. Decimals are checked to the hundredth.<br>' +
+      '• <code>x = 4</code> and <code>4</code> both match. Units and $ are ignored (<code>12 cm</code> = <code>12</code>).<br>' +
+      '• Commas split an answer into pieces. If some pieces are right → <strong>partly correct</strong>. Example key <code>(2, 5)</code>, student types <code>(2, 6)</code>.<br>' +
+      '• For multi-part problems, make separate rows (5a, 5b, 5c) — each part gets its own blank.<br>' +
+      '• Accept other forms with <code>|</code>: <code>y = 2x + 3 | y = 3 + 2x</code>.<br>' +
+      '• "no solution" and "infinitely many" are understood in common wordings.</div></details>' +
+  '</div>');
+
+  var num = card.querySelector('#num'), ttl = card.querySelector('#ttl'), hid = card.querySelector('#hid');
+  num.value = hw.num; ttl.value = hw.title; hid.checked = !!hw.hidden;
+  num.oninput = function(){ hw.num = +num.value || hw.num; saveT(); };
+  ttl.oninput = function(){ hw.title = ttl.value; saveT(); };
+  hid.onchange = function(){ hw.hidden = hid.checked; saveT(); };
+  card.querySelector('#back').onclick = function(){ tState.editing = null; startTeacher(); };
+
+  var rows = card.querySelector('#rows');
+  function drawRows(){
+    rows.innerHTML = '';
+    if (!hw.problems.length) rows.appendChild(el('<div class="empty">No problems yet.</div>'));
+    hw.problems.forEach(function(p, i){
+      var r = el('<div class="keyrow"><input type="text" class="kl"><input type="text" class="ka" placeholder="Answer"><input type="text" class="knote" placeholder="e.g. Write as an ordered pair"><button class="x" title="Remove">×</button></div>');
+      var kl = r.querySelector('.kl'), ka = r.querySelector('.ka'), kn = r.querySelector('.knote');
+      kl.value = p.label; ka.value = p.answer; kn.value = p.note || '';
+      kl.oninput = function(){ p.label = kl.value.trim(); saveT(); };
+      ka.oninput = function(){ p.answer = ka.value; saveT(); };
+      kn.oninput = function(){ p.note = kn.value; saveT(); };
+      r.querySelector('.x').onclick = function(){ hw.problems.splice(i, 1); saveT(); drawRows(); };
+      rows.appendChild(r);
+    });
+  }
+  drawRows();
+  function addParsed(list){
+    if (!list.length){ alert("Couldn't find numbered answers. Try lines like \"1. 12\"."); return; }
+    if (card.querySelector('#replace').checked) hw.problems = list; else hw.problems = hw.problems.concat(list);
+    saveT(); drawRows();
+  }
+  card.querySelector('#doPaste').onclick = function(){ addParsed(parseKey(card.querySelector('#paste').value)); };
+  card.querySelector('#file').onchange = function(e){
+    var f = e.target.files[0]; if (!f) return;
+    var rd = new FileReader();
+    if (/\.docx$/i.test(f.name)){
+      rd.onload = function(){
+        loadMammoth().then(function(m){ return m.extractRawText({ arrayBuffer: rd.result }); })
+          .then(function(r){ card.querySelector('#paste').value = r.value; addParsed(parseKey(r.value)); })
+          .catch(function(){ alert("Couldn't read that Word file. Try copying the answers and pasting them instead."); });
+      };
+      rd.readAsArrayBuffer(f);
+    } else {
+      rd.onload = function(){ card.querySelector('#paste').value = rd.result; addParsed(parseKey(/\.csv$/i.test(f.name) ? csvToLines(rd.result) : rd.result)); };
+      rd.readAsText(f);
+    }
+    e.target.value = '';
+  };
+  card.querySelector('#addRow').onclick = function(){
+    var lastNum = hw.problems.length ? (parseInt(hw.problems[hw.problems.length - 1].label) || 0) : 0;
+    hw.problems.push({ label: String(lastNum + 1), answer: '', note: '' }); saveT(); drawRows();
+    var ins = rows.querySelectorAll('.ka'); if (ins.length) ins[ins.length - 1].focus();
+  };
+  app.appendChild(card);
+}
+function csvToLines(t){
+  return String(t).split(/\r?\n/).map(function(l){
+    var i = l.indexOf(','); return i < 0 ? l : l.slice(0, i).trim() + '. ' + l.slice(i + 1).replace(/^"|"$/g, '').trim();
+  }).join('\n');
+}
+
+function buildPublished(){
+  var out = { version: 1, updated: new Date().toISOString(), classes: {} };
+  CLASSES.forEach(function(c){
+    out.classes[c.id] = T.classes[c.id].filter(function(h){ return !h.hidden; })
+      .sort(function(a, b){ return a.num - b.num; })
+      .map(function(h){
+        var salt = c.id + '-' + h.id;
+        return { id: h.id, num: h.num, title: h.title || '',
+          problems: h.problems.filter(function(p){ return p.label && String(p.answer).trim(); })
+            .map(function(p){ var o = { label: p.label, alts: HWC.buildAlts(p.answer, salt) }; if (p.note) o.note = p.note; return o; }) };
+      });
+  });
+  return out;
+}
+function download(name, text, type){
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([text], { type: type }));
+  a.download = name; document.body.appendChild(a); a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+
+function renderPublish(){
+  var card = el('<div class="card"><h2>Publish to students</h2>' +
+    '<p class="muted">When your answers are ready: download <code>homework.js</code> and upload it to your GitHub repo (replace the old one). Students see the change in about a minute. The file only has scrambled answers — students can\'t read them.</p>' +
+    '<div class="row"><button class="btn" id="pub">Download homework.js</button><button class="btn ghost" id="prev">Preview as student</button></div>' +
+    '<hr style="border:none;border-top:1px solid var(--line);margin:16px 0">' +
+    '<p class="muted">Your answer keys are saved in this browser. Download a backup to keep them safe or move to another computer.</p>' +
+    '<div class="row"><button class="btn small ghost" id="bak">Download backup</button><label class="btn small ghost" style="cursor:pointer">Load backup<input type="file" id="load" accept=".json" hidden></label></div></div>');
+  card.querySelector('#pub').onclick = function(){
+    download('homework.js', '// Homework Checker data — made in teacher mode. Answers are hashed.\nwindow.HOMEWORK_DATA = ' + JSON.stringify(buildPublished()) + ';\n', 'text/javascript');
+  };
+  card.querySelector('#prev').onclick = function(){ startStudent(buildPublished(), true); };
+  card.querySelector('#bak').onclick = function(){
+    download('homework-answer-keys-backup.json', JSON.stringify(T, null, 2), 'application/json');
+  };
+  card.querySelector('#load').onchange = function(e){
+    var f = e.target.files[0]; if (!f) return;
+    var rd = new FileReader();
+    rd.onload = function(){
+      try {
+        var d = JSON.parse(rd.result);
+        if (!d.classes) throw 0;
+        if (!confirm('Replace the answer keys in this browser with this backup?')) return;
+        CLASSES.forEach(function(c){ d.classes[c.id] = d.classes[c.id] || []; });
+        T = d; saveT(); tState.editing = null; startTeacher();
+      } catch(err){ alert("That doesn't look like a Homework Checker backup."); }
+    };
+    rd.readAsText(f); e.target.value = '';
+  };
+  app.appendChild(card);
+}
+
+/* ===================== START ===================== */
+if (params.has('teacher')) startTeacher();
+else startStudent(window.HOMEWORK_DATA || null, false);
+</script>
+</body>
+</html>
