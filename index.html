@@ -3,94 +3,144 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Homework Checker</title>
+<title>Homework Checker · Mr. Lovrien</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#f4f6fb; --card:#ffffff; --ink:#1b2333; --muted:#5d6780; --line:#dde2ee;
-  --brand:#2b5cd6; --brand-ink:#ffffff; --brand-soft:#e6edfd;
-  --good:#1f8a4c; --good-bg:#e3f6ea; --part:#a86a00; --part-bg:#fff3d6; --bad:#c23b3b; --bad-bg:#fde8e8;
-  --shadow:0 2px 10px rgba(20,30,60,.07);
+  --bg:#f3f5f9; --card:#ffffff; --ink:#152033; --ink2:#3a4558; --muted:#6b7487; --line:#e1e5ee; --line2:#cfd5e2;
+  --brand:#1f4fbf; --brand-ink:#ffffff; --brand-soft:#eaf0fd; --navy:#13254d;
+  --good:#17804a; --good-bg:#e5f5ec; --part:#9a6200; --part-bg:#fff4dc; --bad:#b83333; --bad-bg:#fdecec;
+  --radius:14px; --shadow:0 1px 2px rgba(16,24,40,.05),0 2px 8px rgba(16,24,40,.05);
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --bg:#11151f; --card:#1a2030; --ink:#e8ecf5; --muted:#9aa4bd; --line:#2c3447;
-    --brand:#6b93f5; --brand-ink:#0d1220; --brand-soft:#223055;
-    --good:#5fd38f; --good-bg:#16382a; --part:#f2c25b; --part-bg:#3a2f12; --bad:#f08a8a; --bad-bg:#3d1c1c;
+    --bg:#0f141d; --card:#171e2b; --ink:#e9edf5; --ink2:#c3cad8; --muted:#8e98ad; --line:#263044; --line2:#33405a;
+    --brand:#7aa2ff; --brand-ink:#0b1220; --brand-soft:#1c2a4a; --navy:#0b1426;
+    --good:#5fd394; --good-bg:#13342a; --part:#f3c562; --part-bg:#382c10; --bad:#f39494; --bad-bg:#3b1b1d;
     --shadow:none;
   }
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:Lexend,system-ui,sans-serif;font-size:17px;line-height:1.45}
-.wrap{max-width:760px;margin:0 auto;padding:20px 16px 40px}
-header.top{display:flex;align-items:center;gap:12px;margin-bottom:18px}
-.bot{width:44px;height:44px;flex:none}
-h1{font-size:1.45rem;margin:0}
-.sub{color:var(--muted);font-size:.92rem;margin:0}
-h2{font-size:1.15rem;margin:0 0 12px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:var(--shadow);margin-bottom:14px}
-.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
-.big{display:block;width:100%;text-align:left;background:var(--card);border:2px solid var(--line);border-radius:14px;padding:18px;font:inherit;color:inherit;cursor:pointer}
-.big:hover,.big:focus-visible{border-color:var(--brand);outline:none}
-.big strong{display:block;font-size:1.15rem}
-.big span{color:var(--muted);font-size:.9rem}
-.crumbs{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
-button{font:inherit}
-.btn{background:var(--brand);color:var(--brand-ink);border:none;border-radius:10px;padding:10px 16px;font-weight:600;cursor:pointer}
-.btn.ghost{background:transparent;color:var(--brand);border:2px solid var(--brand-soft)}
-.btn.small{padding:6px 11px;font-size:.88rem}
-.btn.danger{background:transparent;color:var(--bad);border:2px solid var(--bad-bg)}
-.btn:disabled{opacity:.5;cursor:default}
-.prob{display:grid;grid-template-columns:64px 1fr auto;gap:10px;align-items:center;padding:12px 0;border-top:1px solid var(--line)}
-.prob:first-of-type{border-top:none}
-.plabel{font-weight:700;font-size:1.1rem}
-.note{grid-column:2/4;color:var(--muted);font-size:.85rem;margin-top:-6px}
-input[type=text],textarea,select,input[type=number]{font:inherit;color:var(--ink);background:var(--bg);border:2px solid var(--line);border-radius:10px;padding:9px 11px;width:100%}
-input:focus,textarea:focus,select:focus{outline:none;border-color:var(--brand)}
-.result{grid-column:2/4;border-radius:10px;padding:8px 12px;font-weight:600;font-size:.95rem;display:none}
-.result.show{display:block}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Lexend,system-ui,-apple-system,Segoe UI,sans-serif;font-size:17px;line-height:1.5}
+button,input,select,textarea{font:inherit;color:inherit}
+.topbar{background:var(--navy);color:#fff}
+.topbar .in{max-width:820px;margin:0 auto;padding:14px 16px;display:flex;align-items:center;gap:12px}
+.mark{width:34px;height:34px;border-radius:9px;background:#fff;display:grid;place-items:center;flex:none}
+.mark svg{width:22px;height:22px}
+.brand{font-weight:600;font-size:1.05rem;line-height:1.2}
+.brand small{display:block;font-weight:400;font-size:.8rem;opacity:.75}
+.topbar .who{margin-left:auto;font-size:.85rem;opacity:.85;text-align:right}
+.wrap{max-width:820px;margin:0 auto;padding:22px 16px 48px}
+.crumbs{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:.9rem;color:var(--muted);margin-bottom:16px}
+.crumbs button{background:none;border:none;padding:0;color:var(--brand);cursor:pointer;font-weight:500}
+.crumbs .sep{opacity:.5}
+h1{font-size:1.6rem;line-height:1.25;margin:0 0 4px}
+h2{font-size:1.15rem;margin:0 0 14px}
+.lead{color:var(--muted);margin:0 0 22px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.pad{padding:20px}
+.choices{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+.choice{display:flex;align-items:center;gap:14px;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;cursor:pointer;box-shadow:var(--shadow);transition:border-color .15s, transform .15s}
+.choice:hover,.choice:focus-visible{border-color:var(--brand);outline:none;transform:translateY(-1px)}
+.choice .ic{width:44px;height:44px;border-radius:12px;background:var(--brand-soft);color:var(--brand);display:grid;place-items:center;font-weight:700;flex:none}
+.choice strong{display:block;font-size:1.05rem}
+.choice span{color:var(--muted);font-size:.88rem}
+.choice .go{margin-left:auto;color:var(--muted)}
+.empty{color:var(--muted);text-align:center;padding:28px 16px}
+/* homework header */
+.hwhead{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:6px}
+.meta{color:var(--muted);font-size:.92rem}
+.howto{display:flex;gap:10px;align-items:flex-start;background:var(--brand-soft);color:var(--ink2);border-radius:12px;padding:12px 14px;font-size:.92rem;margin:16px 0 18px}
+.howto b{color:var(--ink)}
+.progress{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0 12px;margin-bottom:6px}
+.pbar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;display:flex}
+.pbar i{display:block;height:100%}
+.ptext{display:flex;gap:14px;flex-wrap:wrap;font-size:.85rem;color:var(--muted);margin-top:7px}
+.ptext b{color:var(--ink)}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:middle}
+/* problem */
+.prob{padding:20px 20px 18px;margin-bottom:14px;scroll-margin-top:72px}
+.ptop{display:flex;gap:14px;align-items:flex-start}
+.num{flex:none;min-width:34px;height:34px;padding:0 8px;border-radius:10px;background:var(--navy);color:#fff;font-weight:700;display:grid;place-items:center;font-size:.95rem}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .num{background:var(--brand-soft);color:var(--brand)}}
+.q{margin:4px 0 0;color:var(--ink);font-size:1.02rem}
+.fig{margin:14px 0 0 48px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px;display:inline-block;max-width:calc(100% - 48px)}
+.fig img{display:block;max-width:100%;height:auto;max-height:240px}
+.answers{margin:16px 0 0 48px;display:flex;flex-wrap:wrap;gap:12px 18px;align-items:center}
+.blank{display:flex;align-items:center;gap:8px;white-space:nowrap}
+.blank .pre{font-weight:500;color:var(--ink2)}
+.blank .post{font-weight:500;color:var(--ink2);margin-left:-4px}
+.blank input{width:120px;padding:9px 11px;border:1.5px solid var(--line2);border-radius:10px;background:var(--bg);font-size:1rem}
+.blank input.wide{width:170px}
+.blank input:focus{outline:none;border-color:var(--brand);background:var(--card)}
+.blank.ok input,.blank.ok .seg{border-color:var(--good)}
+.blank.no input,.blank.no .seg{border-color:var(--bad)}
+.seg{display:inline-flex;border:1.5px solid var(--line2);border-radius:10px;overflow:hidden}
+.seg button{background:var(--bg);border:none;padding:9px 18px;cursor:pointer;font-weight:500;color:var(--ink2)}
+.seg button+button{border-left:1.5px solid var(--line2)}
+.seg button.on{background:var(--brand);color:var(--brand-ink)}
+.note{margin:10px 0 0 48px;font-size:.85rem;color:var(--muted)}
+.foot{margin:16px 0 0 48px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.btn{background:var(--brand);color:var(--brand-ink);border:none;border-radius:10px;padding:10px 18px;font-weight:600;cursor:pointer}
+.btn:hover{filter:brightness(1.05)}
+.btn.ghost{background:transparent;color:var(--brand);border:1.5px solid var(--line2)}
+.btn.small{padding:7px 12px;font-size:.88rem}
+.btn.danger{background:transparent;color:var(--bad);border:1.5px solid var(--line2)}
+.result{display:none;align-items:center;gap:8px;border-radius:10px;padding:8px 12px;font-weight:600;font-size:.93rem}
+.result.show{display:inline-flex}
+.result svg{width:18px;height:18px;flex:none}
 .r-good{background:var(--good-bg);color:var(--good)}
 .r-part{background:var(--part-bg);color:var(--part)}
 .r-bad{background:var(--bad-bg);color:var(--bad)}
 .r-empty{background:var(--brand-soft);color:var(--brand)}
-.summary{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
-.pill{border-radius:999px;padding:5px 12px;font-weight:600;font-size:.9rem}
-.tip{background:var(--brand-soft);border-radius:12px;padding:12px 14px;font-size:.92rem;margin-bottom:14px}
-footer{text-align:center;color:var(--muted);font-size:.8rem;margin-top:24px}
-.empty{color:var(--muted);text-align:center;padding:20px}
-/* teacher */
-.tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
-.tab{background:var(--card);border:2px solid var(--line);border-radius:10px;padding:8px 14px;cursor:pointer;font-weight:600;color:var(--ink)}
-.tab.on{border-color:var(--brand);background:var(--brand-soft)}
-.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.keyrow{display:grid;grid-template-columns:70px 1fr 1fr 34px;gap:8px;margin-bottom:8px;align-items:center}
-.keyhead{font-size:.8rem;color:var(--muted);font-weight:600}
-.x{background:none;border:none;color:var(--bad);font-size:1.3rem;cursor:pointer}
-.hwitem{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.bottom{display:flex;gap:10px;justify-content:center;margin-top:18px}
+footer{text-align:center;color:var(--muted);font-size:.8rem;margin-top:30px}
+.previewbar{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--part-bg);color:var(--part);border-radius:12px;padding:10px 14px;margin-bottom:16px;font-weight:500;font-size:.92rem}
+@media (max-width:560px){
+  .fig,.answers,.note,.foot{margin-left:0}
+  .fig{max-width:100%}
+  .prob{padding:16px}
+  h1{font-size:1.35rem}
+}
+/* ===== teacher ===== */
+.tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.tab{background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:8px 14px;cursor:pointer;font-weight:600}
+.tab.on{border-color:var(--brand);background:var(--brand-soft);color:var(--brand)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.field{display:flex;flex-direction:column;gap:4px;font-size:.82rem;color:var(--muted);font-weight:500}
+.field input,.field textarea,.field select,.tinput{font-size:.95rem;color:var(--ink);background:var(--bg);border:1.5px solid var(--line2);border-radius:9px;padding:8px 10px;width:100%}
+.field textarea{resize:vertical}
+.hwitem{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 0;border-top:1px solid var(--line)}
 .hwitem:first-child{border-top:none}
 .muted{color:var(--muted);font-size:.88rem}
+.eprob{border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px;background:var(--bg)}
+.eprob .head{display:grid;grid-template-columns:80px 1fr auto;gap:10px;align-items:start}
+.eparts{margin-top:10px}
+.epart{display:grid;grid-template-columns:1fr 1fr 70px 110px 30px;gap:8px;margin-bottom:6px;align-items:center}
+.epart.hd{font-size:.75rem;color:var(--muted);font-weight:600;margin-bottom:4px}
+.x{background:none;border:none;color:var(--bad);font-size:1.3rem;cursor:pointer;line-height:1}
+.efig{display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap}
+.efig img{max-height:80px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:4px}
 details summary{cursor:pointer;font-weight:600}
 code{background:var(--brand-soft);padding:1px 5px;border-radius:5px;font-size:.88em}
-@media (max-width:520px){
-  .prob{grid-template-columns:48px 1fr}
-  .prob .btn{grid-column:2}
-  .note,.result{grid-column:1/3}
-  .keyrow{grid-template-columns:52px 1fr 30px}
-  .keyrow .knote{grid-column:2/3}
+hr.sep{border:none;border-top:1px solid var(--line);margin:18px 0}
+@media (max-width:600px){
+  .epart{grid-template-columns:1fr 1fr 30px}
+  .epart .ep-post,.epart .ep-type{grid-column:span 1}
+  .eprob .head{grid-template-columns:64px 1fr auto}
 }
 </style>
 <script src="homework.js"></script>
 </head>
 <body>
+<header class="topbar"><div class="in">
+  <div class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#13254d" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg></div>
+  <div class="brand">Homework Checker<small>Mr. Lovrien · 8th Grade Math</small></div>
+  <div class="who" id="who"></div>
+</div></header>
 <div class="wrap">
-  <header class="top">
-    <svg class="bot" viewBox="0 0 48 48" aria-hidden="true"><rect x="8" y="12" width="32" height="26" rx="8" fill="var(--brand)"/><rect x="22" y="4" width="4" height="9" rx="2" fill="var(--brand)"/><circle cx="24" cy="4" r="3.5" fill="var(--part)"/><circle cx="18" cy="24" r="4" fill="var(--card)"/><circle cx="30" cy="24" r="4" fill="var(--card)"/><rect x="17" y="31" width="14" height="3" rx="1.5" fill="var(--card)"/><rect x="3" y="20" width="5" height="10" rx="2.5" fill="var(--brand)"/><rect x="40" y="20" width="5" height="10" rx="2.5" fill="var(--brand)"/></svg>
-    <div>
-      <h1 id="title">Homework Checker</h1>
-      <p class="sub" id="subtitle">Check your answers. It tells you if you're right — not the answer.</p>
-    </div>
-  </header>
   <main id="app"></main>
   <footer>Made by Mr. Lovrien 2026</footer>
 </div>
@@ -204,11 +254,23 @@ if (typeof module !== 'undefined') module.exports = HWC;
 
 <script>
 var CLASSES = [
-  { id: 'regular', name: '8th Grade Math', blurb: 'Regular math' },
-  { id: 'accelerated', name: '8th Accelerated', blurb: 'Accelerated / Integrated Math I' }
+  { id: 'regular', name: '8th Grade Math', short: 'Math 8', blurb: 'Regular 8th grade math', ic: '8' },
+  { id: 'accelerated', name: '8th Grade Accelerated', short: 'Accelerated', blurb: 'Accelerated / Integrated Math I', ic: 'A' }
 ];
 var params = new URLSearchParams(location.search);
 var app = document.getElementById('app');
+var ICON = {
+  good: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5l4 4 8-9"/></svg>',
+  part: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="10" cy="10" r="7"/><path d="M10 3a7 7 0 0 1 0 14z" fill="currentColor"/></svg>',
+  bad: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5.5 5.5l9 9M14.5 5.5l-9 9"/></svg>',
+  info: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10" cy="10" r="7.5"/><path d="M10 9v5M10 6.2v.1" stroke-linecap="round"/></svg>'
+};
+var MSG = {
+  correct:   ['r-good', ICON.good, 'Correct!'],
+  partial:   ['r-part', ICON.part, 'Partly correct. Some of your answer is right — check your work.'],
+  incorrect: ['r-bad',  ICON.bad,  'Not yet. Look back at your work and try again.'],
+  empty:     ['r-empty',ICON.info, 'Fill in every blank first.']
+};
 
 function store(key, val){
   try {
@@ -218,202 +280,268 @@ function store(key, val){
 }
 function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
 function el(html){ var d = document.createElement('div'); d.innerHTML = html.trim(); return d.firstChild; }
-function className(id){ var c = CLASSES.find(function(x){ return x.id === id; }); return c ? c.name : id; }
+function cls(id){ return CLASSES.find(function(x){ return x.id === id; }) || { id: id, name: id, short: id }; }
 
-/* ===================== STUDENT SIDE ===================== */
-var student = { data: null, cls: null, hw: null, preview: false };
+// Older data (one answer per problem) -> current format
+function normProblem(p){
+  if (p.parts) return p;
+  return { n: p.label, q: '', note: p.note || '', parts: [{ pre: '', post: '', type: 'text', alts: p.alts }] };
+}
+
+/* ===================== STUDENT ===================== */
+var S = { data: null, cls: null, hw: null, preview: false };
 
 function startStudent(data, preview){
-  student.data = data; student.preview = !!preview;
+  S.data = data; S.preview = !!preview;
   var pre = params.get('class');
-  student.cls = (pre && data && data.classes[pre]) ? pre : null;
-  student.hw = null;
-  renderStudent();
+  S.cls = (pre && data && data.classes && data.classes[pre]) ? pre : (store('hwc-class') || null);
+  if (S.cls && !(data && data.classes && data.classes[S.cls])) S.cls = null;
+  S.hw = null;
+  render();
 }
-
-function renderStudent(){
-  document.getElementById('title').textContent = 'Homework Checker';
-  document.getElementById('subtitle').textContent = "Check your answers. It tells you if you're right — not the answer.";
+function render(){
   app.innerHTML = '';
-  if (student.preview){
-    var bar = el('<div class="tip"><strong>Preview mode</strong> — this is what students will see. <button class="btn small" id="exitPrev">Back to teacher</button></div>');
+  document.getElementById('who').textContent = S.cls ? cls(S.cls).name : '';
+  window.scrollTo(0, 0);
+  if (S.preview){
+    var bar = el('<div class="previewbar"><span>Preview — this is what students see.</span><button class="btn small">Back to teacher</button></div>');
+    bar.querySelector('button').onclick = function(){ startTeacher(); };
     app.appendChild(bar);
-    bar.querySelector('#exitPrev').onclick = function(){ startTeacher(); };
   }
-  var data = student.data;
-  if (!data || !data.classes){
-    app.appendChild(el('<div class="card empty">No homework has been posted yet. Check back soon!</div>'));
+  if (!S.data || !S.data.classes){
+    app.appendChild(el('<div class="card empty">No homework has been posted yet. Check back soon.</div>'));
     return;
   }
-  if (!student.cls) return renderPickClass();
-  if (!student.hw) return renderPickHW();
-  renderProblems();
+  if (!S.cls) return pickClass();
+  if (!S.hw) return pickHW();
+  showHW();
 }
-
-function renderPickClass(){
-  var card = el('<div class="card"><h2>1. Pick your class</h2><div class="grid"></div></div>');
-  var g = card.querySelector('.grid');
+function pickClass(){
+  app.appendChild(el('<h1>Which class are you in?</h1>'));
+  app.appendChild(el('<p class="lead">Check your homework answers before you turn them in.</p>'));
+  var g = el('<div class="choices"></div>');
   CLASSES.forEach(function(c){
-    var b = el('<button class="big"><strong>' + esc(c.name) + '</strong><span>' + esc(c.blurb) + '</span></button>');
-    b.onclick = function(){ student.cls = c.id; renderStudent(); };
+    var b = el('<button class="choice"><div class="ic">' + esc(c.ic) + '</div><div><strong>' + esc(c.name) + '</strong><span>' + esc(c.blurb) + '</span></div><div class="go">›</div></button>');
+    b.onclick = function(){ S.cls = c.id; store('hwc-class', c.id); render(); };
     g.appendChild(b);
   });
-  app.appendChild(card);
+  app.appendChild(g);
 }
-
-function renderPickHW(){
-  var list = (student.data.classes[student.cls] || []).slice().sort(function(a, b){ return b.num - a.num; });
-  var crumbs = el('<div class="crumbs"><button class="btn ghost small">← Change class</button><strong>' + esc(className(student.cls)) + '</strong></div>');
-  crumbs.querySelector('button').onclick = function(){ student.cls = null; renderStudent(); };
+function pickHW(){
+  var c = cls(S.cls);
+  var crumbs = el('<div class="crumbs"><button>← Change class</button></div>');
+  crumbs.querySelector('button').onclick = function(){ S.cls = null; store('hwc-class', ''); render(); };
   app.appendChild(crumbs);
-  var card = el('<div class="card"><h2>2. Pick your homework</h2><div class="grid"></div></div>');
-  var g = card.querySelector('.grid');
-  if (!list.length) g.parentNode.appendChild(el('<div class="empty">No homework posted for this class yet.</div>'));
+  app.appendChild(el('<h1>Pick your homework</h1>'));
+  app.appendChild(el('<p class="lead">' + esc(c.name) + '</p>'));
+  var list = (S.data.classes[S.cls] || []).slice().sort(function(a, b){ return b.num - a.num; });
+  if (!list.length){ app.appendChild(el('<div class="card empty">No homework posted for this class yet.</div>')); return; }
+  var g = el('<div class="choices"></div>');
   list.forEach(function(hw){
-    var b = el('<button class="big"><strong>HW ' + esc(hw.num) + '</strong><span>' + esc(hw.title || (hw.problems.length + ' problems')) + '</span></button>');
-    b.onclick = function(){ student.hw = hw; renderStudent(); };
+    var sub = [hw.title, hw.due ? 'Due ' + hw.due : ''].filter(Boolean).join(' · ') || (hw.problems.length + ' problems');
+    var b = el('<button class="choice"><div class="ic">#' + esc(hw.num) + '</div><div><strong>Homework #' + esc(hw.num) + '</strong><span>' + esc(sub) + '</span></div><div class="go">›</div></button>');
+    b.onclick = function(){ S.hw = hw; render(); };
     g.appendChild(b);
   });
-  app.appendChild(card);
+  app.appendChild(g);
 }
 
-var MSG = {
-  correct: ['r-good', '✓ Correct! Nice work.'],
-  partial: ['r-part', '◐ Partly correct. Some of it is right — check your work.'],
-  incorrect: ['r-bad', '✗ Not yet. Look back at your work and try again.'],
-  empty: ['r-empty', 'Type an answer first.']
-};
+function checkProblem(p, vals, salt){
+  var each = p.parts.map(function(part, j){ return HWC.check(vals[j] || '', part.alts, salt); });
+  if (each.some(function(r){ return r === 'empty'; })) return { overall: 'empty', each: each };
+  if (each.every(function(r){ return r === 'correct'; })) return { overall: 'correct', each: each };
+  if (each.some(function(r){ return r === 'correct' || r === 'partial'; })) return { overall: 'partial', each: each };
+  return { overall: 'incorrect', each: each };
+}
 
-function renderProblems(){
-  var hw = student.hw, salt = student.cls + '-' + hw.id;
-  var saveKey = 'hwc-ans-' + salt;
+function showHW(){
+  var hw = S.hw, c = cls(S.cls), salt = S.cls + '-' + hw.id;
+  var problems = hw.problems.map(normProblem);
+  var saveKey = 'hwc2-' + salt;
   var saved = store(saveKey) || {};
-  var crumbs = el('<div class="crumbs"><button class="btn ghost small">← All homework</button><strong>' + esc(className(student.cls)) + ' · HW ' + esc(hw.num) + '</strong></div>');
-  crumbs.querySelector('button').onclick = function(){ student.hw = null; renderStudent(); };
+  var status = {};
+
+  var crumbs = el('<div class="crumbs"><button data-a="c">' + esc(c.short) + '</button><span class="sep">/</span><button data-a="h">All homework</button><span class="sep">/</span><span>#' + esc(hw.num) + '</span></div>');
+  crumbs.querySelector('[data-a=c]').onclick = function(){ S.hw = null; render(); };
+  crumbs.querySelector('[data-a=h]').onclick = function(){ S.hw = null; render(); };
   app.appendChild(crumbs);
-  app.appendChild(el('<div class="tip">Type your answer and press <strong>Check</strong>. Fractions like <code>3/4</code> or decimals like <code>0.75</code> both work. For points, type <code>(2, 5)</code>.</div>'));
+  app.appendChild(el('<div class="hwhead"><div><h1>Homework #' + esc(hw.num) + (hw.title ? ' · ' + esc(hw.title) : '') + '</h1>' +
+    '<div class="meta">' + esc(c.name) + (hw.due ? ' · Due ' + esc(hw.due) : '') + ' · ' + problems.length + ' problems</div></div></div>'));
+  app.appendChild(el('<div class="howto">' + ICON.info.replace('<svg', '<svg style="width:20px;height:20px;flex:none;margin-top:1px"') +
+    '<div>Do the work on your paper first. Then type your answer and press <b>Check</b>. You will see if it is right — not the answer. ' +
+    'Fractions (<b>3/4</b>) and decimals (<b>0.75</b>) both work.</div></div>'));
 
-  var card = el('<div class="card"><h2>' + esc(hw.title || 'HW ' + hw.num) + '</h2><div class="probs"></div><div class="row" style="margin-top:14px"><button class="btn" id="checkAll">Check all</button><button class="btn ghost" id="clearAll">Clear</button></div><div class="summary" id="summary"></div></div>');
-  var box = card.querySelector('.probs');
-  var results = {};
+  var prog = el('<div class="progress"><div class="pbar"><i class="g" style="background:var(--good)"></i><i class="p" style="background:var(--part)"></i><i class="b" style="background:var(--bad)"></i></div><div class="ptext"></div></div>');
+  app.appendChild(prog);
 
-  hw.problems.forEach(function(p, i){
-    var id = 'p' + i;
-    var row = el('<div class="prob">' +
-      '<label class="plabel" for="' + id + '">' + esc(p.label) + '.</label>' +
-      '<input type="text" id="' + id + '" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Your answer">' +
-      '<button class="btn small">Check</button>' +
+  problems.forEach(function(p, i){
+    var card = el('<section class="card prob" id="q' + i + '">' +
+      '<div class="ptop"><div class="num">' + esc(p.n) + '</div><p class="q">' + esc(p.q || 'Problem ' + p.n) + '</p></div>' +
+      (p.img ? '<div class="fig"><img alt="Figure for problem ' + esc(p.n) + '" src="' + p.img + '"></div>' : '') +
+      '<div class="answers"></div>' +
       (p.note ? '<div class="note">' + esc(p.note) + '</div>' : '') +
-      '<div class="result" role="status"></div></div>');
-    var input = row.querySelector('input'), res = row.querySelector('.result');
-    input.value = saved[p.label] || '';
-    function run(){
-      var r = HWC.check(input.value, p.alts, salt);
-      res.className = 'result show ' + MSG[r][0];
-      res.textContent = MSG[r][1];
-      results[i] = r;
-      updateSummary();
+      '<div class="foot"><button class="btn">Check</button><div class="result" role="status" aria-live="polite"></div></div>' +
+    '</section>');
+    var box = card.querySelector('.answers'), res = card.querySelector('.result');
+    var vals = p.parts.map(function(_, j){ return saved[i + '-' + j] || ''; });
+    var blanks = [];
+
+    function changed(j, v){
+      vals[j] = v; saved[i + '-' + j] = v; store(saveKey, saved);
+      res.className = 'result'; blanks.forEach(function(b){ b.classList.remove('ok', 'no'); });
+      delete status[i]; updateProgress();
     }
-    row.querySelector('button').onclick = run;
-    input.addEventListener('keydown', function(e){ if (e.key === 'Enter') run(); });
-    input.addEventListener('input', function(){
-      saved[p.label] = input.value; store(saveKey, saved);
-      res.className = 'result'; delete results[i]; updateSummary();
+    p.parts.forEach(function(part, j){
+      var b;
+      if (part.type === 'choice'){
+        var opts = part.options || ['Yes', 'No'];
+        b = el('<div class="blank">' + (part.pre ? '<span class="pre">' + esc(part.pre) + '</span>' : '') + '<div class="seg" role="group"></div>' + (part.post ? '<span class="post">' + esc(part.post) + '</span>' : '') + '</div>');
+        var seg = b.querySelector('.seg');
+        opts.forEach(function(o){
+          var ob = el('<button type="button">' + esc(o) + '</button>');
+          if (vals[j] === o) ob.classList.add('on');
+          ob.onclick = function(){
+            seg.querySelectorAll('button').forEach(function(x){ x.classList.remove('on'); });
+            ob.classList.add('on'); changed(j, o);
+          };
+          seg.appendChild(ob);
+        });
+      } else {
+        b = el('<label class="blank">' + (part.pre ? '<span class="pre">' + esc(part.pre) + '</span>' : '') +
+          '<input type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"' + (part.pre && part.pre.length > 10 ? ' class="wide"' : '') + ' aria-label="' + esc((part.pre || 'Answer') + ' problem ' + p.n) + '">' +
+          (part.post ? '<span class="post">' + esc(part.post) + '</span>' : '') + '</label>');
+        var inp = b.querySelector('input');
+        inp.value = vals[j];
+        inp.addEventListener('input', function(){ changed(j, inp.value); });
+        inp.addEventListener('keydown', function(e){ if (e.key === 'Enter') run(); });
+      }
+      blanks.push(b); box.appendChild(b);
     });
-    row._run = run;
-    box.appendChild(row);
+
+    function run(){
+      var r = checkProblem(p, vals, salt);
+      var m = MSG[r.overall];
+      res.className = 'result show ' + m[0];
+      res.innerHTML = m[1] + '<span>' + m[2] + '</span>';
+      blanks.forEach(function(b, j){
+        b.classList.remove('ok', 'no');
+        if (r.overall !== 'empty' && p.parts.length > 1) b.classList.add(r.each[j] === 'correct' ? 'ok' : 'no');
+      });
+      if (r.overall !== 'empty') status[i] = r.overall; else delete status[i];
+      updateProgress();
+    }
+    card.querySelector('.btn').onclick = run;
+    card._run = run; card._filled = function(){ return vals.some(function(v){ return String(v).trim(); }); };
+    app.appendChild(card);
   });
 
-  function updateSummary(){
-    var c = {correct:0, partial:0, incorrect:0};
-    Object.keys(results).forEach(function(k){ if (c[results[k]] != null) c[results[k]]++; });
-    var s = card.querySelector('#summary'); s.innerHTML = '';
-    if (!Object.keys(results).length) return;
-    s.appendChild(el('<span class="pill r-good">✓ ' + c.correct + ' correct</span>'));
-    if (c.partial) s.appendChild(el('<span class="pill r-part">◐ ' + c.partial + ' partly</span>'));
-    if (c.incorrect) s.appendChild(el('<span class="pill r-bad">✗ ' + c.incorrect + ' not yet</span>'));
-  }
-  card.querySelector('#checkAll').onclick = function(){
-    box.querySelectorAll('.prob').forEach(function(r){ if (r.querySelector('input').value.trim()) r._run(); });
+  var bottom = el('<div class="bottom"><button class="btn" data-a="all">Check all</button><button class="btn ghost" data-a="clr">Clear my answers</button></div>');
+  bottom.querySelector('[data-a=all]').onclick = function(){
+    app.querySelectorAll('.prob').forEach(function(c){ if (c._filled()) c._run(); });
   };
-  card.querySelector('#clearAll').onclick = function(){
+  bottom.querySelector('[data-a=clr]').onclick = function(){
     if (!confirm('Clear all your answers for this homework?')) return;
-    saved = {}; store(saveKey, saved); results = {};
-    box.querySelectorAll('input').forEach(function(i){ i.value = ''; });
-    box.querySelectorAll('.result').forEach(function(r){ r.className = 'result'; });
-    updateSummary();
+    store(saveKey, {}); render();
   };
-  app.appendChild(card);
+  app.appendChild(bottom);
+
+  function updateProgress(){
+    var n = problems.length, g = 0, pt = 0, b = 0;
+    Object.keys(status).forEach(function(k){ if (status[k] === 'correct') g++; else if (status[k] === 'partial') pt++; else b++; });
+    prog.querySelector('.g').style.width = (g / n * 100) + '%';
+    prog.querySelector('.p').style.width = (pt / n * 100) + '%';
+    prog.querySelector('.b').style.width = (b / n * 100) + '%';
+    prog.querySelector('.ptext').innerHTML =
+      '<span><b>' + g + ' of ' + n + '</b> correct</span>' +
+      (pt ? '<span><i class="dot" style="background:var(--part)"></i>' + pt + ' partly</span>' : '') +
+      (b ? '<span><i class="dot" style="background:var(--bad)"></i>' + b + ' not yet</span>' : '') +
+      (n - g - pt - b ? '<span><i class="dot" style="background:var(--line2)"></i>' + (n - g - pt - b) + ' not checked</span>' : '');
+  }
+  updateProgress();
 }
 
-/* ===================== TEACHER SIDE ===================== */
-var TKEY = 'hwc-teacher-v1';
-var T = store(TKEY) || { classes: { regular: [], accelerated: [] } };
-var tState = { cls: 'regular', editing: null };
+/* ===================== TEACHER ===================== */
+var TKEY = 'hwc-teacher-v2';
+var T = store(TKEY);
+if (!T){
+  var old = store('hwc-teacher-v1');
+  T = { classes: { regular: [], accelerated: [] } };
+  if (old && old.classes) CLASSES.forEach(function(c){
+    T.classes[c.id] = (old.classes[c.id] || []).map(function(h){
+      return { id: h.id, num: h.num, title: h.title, due: '', hidden: h.hidden, problems: h.problems.map(function(p){
+        return { n: p.label, q: '', img: '', note: p.note || '', parts: [{ pre: '', post: '', type: 'text', answer: p.answer }] };
+      }) };
+    });
+  });
+}
+CLASSES.forEach(function(c){ T.classes[c.id] = T.classes[c.id] || []; });
+var tS = { cls: 'regular', editing: null };
 function saveT(){ store(TKEY, T); }
 function uid(){ return Math.random().toString(36).slice(2, 9); }
 
 function startTeacher(){
-  document.getElementById('title').textContent = 'Homework Checker — Teacher';
-  document.getElementById('subtitle').textContent = 'Add answer keys, then download homework.js and upload it to GitHub.';
+  document.getElementById('who').textContent = 'Teacher mode';
   app.innerHTML = '';
+  app.appendChild(el('<h1>Teacher mode</h1>'));
+  app.appendChild(el('<p class="lead">Build each homework, then download <b>homework.js</b> and upload it to GitHub.</p>'));
   var tabs = el('<div class="tabs"></div>');
   CLASSES.forEach(function(c){
-    var t = el('<button class="tab' + (tState.cls === c.id ? ' on' : '') + '">' + esc(c.name) + '</button>');
-    t.onclick = function(){ tState.cls = c.id; tState.editing = null; startTeacher(); };
+    var t = el('<button class="tab' + (tS.cls === c.id ? ' on' : '') + '">' + esc(c.name) + '</button>');
+    t.onclick = function(){ tS.cls = c.id; tS.editing = null; startTeacher(); };
     tabs.appendChild(t);
   });
   app.appendChild(tabs);
-  if (tState.editing) renderEditor(); else renderHWList();
+  if (tS.editing) renderEditor(); else renderList();
   renderPublish();
 }
 
-function renderHWList(){
-  var list = T.classes[tState.cls];
-  var card = el('<div class="card"><div class="row" style="justify-content:space-between;margin-bottom:8px"><h2 style="margin:0">' + esc(className(tState.cls)) + ' homework</h2><button class="btn small" id="addHW">+ New homework</button></div><div id="hwlist"></div></div>');
-  var box = card.querySelector('#hwlist');
-  if (!list.length) box.appendChild(el('<div class="empty">No homework yet. Click <strong>+ New homework</strong>.</div>'));
+function renderList(){
+  var list = T.classes[tS.cls];
+  var card = el('<div class="card pad" style="margin-bottom:14px"><div class="row" style="justify-content:space-between;margin-bottom:6px"><h2 style="margin:0">' + esc(cls(tS.cls).name) + '</h2><button class="btn small" id="add">+ New homework</button></div><div id="l"></div></div>');
+  var box = card.querySelector('#l');
+  if (!list.length) box.appendChild(el('<div class="empty">No homework yet. Click <b>+ New homework</b>, or <b>Load backup</b> below.</div>'));
   list.slice().sort(function(a, b){ return a.num - b.num; }).forEach(function(hw){
-    var it = el('<div class="hwitem"><div><strong>HW ' + esc(hw.num) + '</strong> ' + esc(hw.title || '') +
-      '<div class="muted">' + hw.problems.length + ' problems' + (hw.hidden ? ' · hidden from students' : '') + '</div></div>' +
-      '<div class="row"><button class="btn small ghost" data-a="edit">Edit</button><button class="btn small danger" data-a="del">Delete</button></div></div>');
-    it.querySelector('[data-a=edit]').onclick = function(){ tState.editing = hw.id; startTeacher(); };
-    it.querySelector('[data-a=del]').onclick = function(){
-      if (!confirm('Delete HW ' + hw.num + '?')) return;
-      T.classes[tState.cls] = list.filter(function(h){ return h !== hw; }); saveT(); startTeacher();
+    var it = el('<div class="hwitem"><div><strong>Homework #' + esc(hw.num) + '</strong> ' + esc(hw.title || '') +
+      '<div class="muted">' + hw.problems.length + ' problems' + (hw.due ? ' · Due ' + esc(hw.due) : '') + (hw.hidden ? ' · hidden from students' : '') + '</div></div>' +
+      '<div class="row"><button class="btn small ghost" data-a="e">Edit</button><button class="btn small danger" data-a="d">Delete</button></div></div>');
+    it.querySelector('[data-a=e]').onclick = function(){ tS.editing = hw.id; startTeacher(); };
+    it.querySelector('[data-a=d]').onclick = function(){
+      if (!confirm('Delete Homework #' + hw.num + '?')) return;
+      T.classes[tS.cls] = list.filter(function(h){ return h !== hw; }); saveT(); startTeacher();
     };
     box.appendChild(it);
   });
-  card.querySelector('#addHW').onclick = function(){
+  card.querySelector('#add').onclick = function(){
     var next = list.reduce(function(m, h){ return Math.max(m, +h.num || 0); }, 0) + 1;
-    var hw = { id: uid(), num: next, title: '', hidden: false, problems: [] };
-    list.push(hw); saveT(); tState.editing = hw.id; startTeacher();
+    var hw = { id: uid(), num: next, title: '', due: '', hidden: false, problems: [] };
+    list.push(hw); saveT(); tS.editing = hw.id; startTeacher();
   };
   app.appendChild(card);
 }
 
+// "x = 25; ∠A = 50°; no" -> blanks
+function smartParts(ans){
+  return String(ans).split(';').map(function(s){ return s.trim(); }).filter(Boolean).map(function(s){
+    var post = /°\s*$/.test(s) ? '°' : '';
+    s = s.replace(/°\s*$/, '');
+    var m = s.match(/^((?:m?∠\s*[A-Za-z]{1,3})|[a-z]|(?:\(?[^=]{1,20}\)?°?))\s*=\s*(.+)$/);
+    if (/^(yes|no)\b/i.test(s)) return { pre: '', post: '', type: 'choice', answer: /^yes/i.test(s) ? 'Yes' : 'No' };
+    if (m){
+      var pre = m[1].trim(); if (/^∠/.test(pre)) pre = 'm' + pre;
+      return { pre: pre + ' =', post: post, type: 'text', answer: m[2].trim() };
+    }
+    return { pre: '', post: post, type: 'text', answer: s };
+  });
+}
 function parseKey(text){
-  var out = [], last = null;
+  var out = [];
   String(text).split(/\r?\n/).forEach(function(line){
     var l = line.trim(); if (!l) return;
     var m = l.match(/^(?:#|problem|prob\.?|q|question)?\s*(\d+\s*[a-z]?)\s*[\.\):\-]\s*(.+)$/i);
-    var sub = l.match(/^\(?([a-h])[\.\)]\s*(.+)$/i);
-    var ans;
-    if (m){
-      var label = m[1].replace(/\s+/g, '');
-      ans = m[2].trim();
-      var inner = ans.match(/^\(?([a-h])[\.\)]\s*(.+)$/i);   // "8. a) 12"
-      if (inner && /\d$/.test(label)){ label = label + inner[1].toLowerCase(); ans = inner[2]; }
-      last = label.replace(/[a-z]$/i, '');
-      out.push({ label: label, answer: cleanAns(ans), note: '' });
-    } else if (sub && last){
-      out.push({ label: last + sub[1].toLowerCase(), answer: cleanAns(sub[2]), note: '' });
-    }
+    if (m) out.push({ n: m[1].replace(/\s+/g, ''), q: '', img: '', note: '', parts: smartParts(m[2].replace(/^(answer|ans)\s*[:\-]\s*/i, '')) });
   });
   return out;
 }
-function cleanAns(a){ return a.replace(/^(answer|ans)\s*[:\-]\s*/i, '').replace(/\s*\(\d+\s*pts?\)\s*$/i, '').trim(); }
-
 function loadMammoth(){
   return new Promise(function(res, rej){
     if (window.mammoth) return res(window.mammoth);
@@ -423,103 +551,162 @@ function loadMammoth(){
     document.head.appendChild(s);
   });
 }
+function imageToDataURL(file, cb){
+  var rd = new FileReader();
+  rd.onload = function(){
+    var img = new Image();
+    img.onload = function(){
+      var max = 640, sc = Math.min(1, max / img.width);
+      var cv = document.createElement('canvas');
+      cv.width = Math.round(img.width * sc); cv.height = Math.round(img.height * sc);
+      var cx = cv.getContext('2d'); cx.fillStyle = '#fff'; cx.fillRect(0, 0, cv.width, cv.height);
+      cx.drawImage(img, 0, 0, cv.width, cv.height);
+      cb(cv.toDataURL('image/png'));
+    };
+    img.src = rd.result;
+  };
+  rd.readAsDataURL(file);
+}
 
 function renderEditor(){
-  var hw = T.classes[tState.cls].find(function(h){ return h.id === tState.editing; });
-  if (!hw){ tState.editing = null; return renderHWList(); }
-  var card = el('<div class="card">' +
-    '<div class="crumbs"><button class="btn ghost small" id="back">← Done</button><strong>' + esc(className(tState.cls)) + '</strong></div>' +
-    '<div class="row" style="margin-bottom:14px">' +
-      '<label style="flex:0 0 110px">HW #<input type="number" id="num" min="1"></label>' +
-      '<label style="flex:1 1 220px">Title (optional)<input type="text" id="ttl" placeholder="e.g. 4.2 Slope from tables"></label>' +
-      '<label class="row" style="flex:0 0 auto;gap:6px;margin-top:20px"><input type="checkbox" id="hid"> Hide from students</label>' +
+  var hw = T.classes[tS.cls].find(function(h){ return h.id === tS.editing; });
+  if (!hw){ tS.editing = null; return renderList(); }
+  var card = el('<div class="card pad" style="margin-bottom:14px">' +
+    '<div class="crumbs"><button id="back">← Done</button></div>' +
+    '<div class="row" style="margin-bottom:14px;align-items:flex-end">' +
+      '<label class="field" style="flex:0 0 90px">HW #<input type="number" id="num" min="1"></label>' +
+      '<label class="field" style="flex:1 1 220px">Title<input type="text" id="ttl" placeholder="Triangle angles & similar triangles"></label>' +
+      '<label class="field" style="flex:0 0 150px">Due<input type="text" id="due" placeholder="Fri, Oct 23"></label>' +
+      '<label class="row muted" style="gap:6px;padding-bottom:8px"><input type="checkbox" id="hid"> Hide</label>' +
     '</div>' +
-    '<details open style="margin-bottom:14px"><summary>Import answer key</summary>' +
-      '<p class="muted">Paste your Math Maker answer key, or upload the answer key file (.docx or .txt). Lines like <code>1. 12</code>, <code>2) x = -3</code>, <code>5a. (2, 4)</code> are picked up. Check the list below after importing.</p>' +
-      '<textarea id="paste" rows="5" placeholder="1. 12&#10;2. x = -3&#10;3. 3/4&#10;4. no solution&#10;5. (2, 5)"></textarea>' +
-      '<div class="row" style="margin-top:8px"><button class="btn small" id="doPaste">Add from paste</button><label class="btn small ghost" style="cursor:pointer">Upload file<input type="file" id="file" accept=".docx,.txt,.csv" hidden></label><label class="row muted" style="gap:6px"><input type="checkbox" id="replace" checked> Replace current list</label></div>' +
+    '<details style="margin-bottom:16px"><summary>Quick import from an answer key</summary>' +
+      '<p class="muted">Paste lines like <code>1. x = 25; ∠A = 50°; ∠B = 101°</code>. Semicolons make separate blanks. Then add the question text and figures below.</p>' +
+      '<textarea id="paste" rows="5" class="tinput" placeholder="1. x = 25; ∠A = 50°&#10;2. x = 18&#10;9. no"></textarea>' +
+      '<div class="row" style="margin-top:8px"><button class="btn small" id="doPaste">Import</button><label class="btn small ghost" style="cursor:pointer">Upload .docx / .txt<input type="file" id="file" accept=".docx,.txt" hidden></label><label class="row muted" style="gap:6px"><input type="checkbox" id="replace" checked> Replace current problems</label></div>' +
     '</details>' +
-    '<h2>Answers</h2>' +
-    '<div class="keyrow keyhead"><span>Problem</span><span>Answer</span><span class="knote">Note students see (optional)</span><span></span></div>' +
-    '<div id="rows"></div>' +
-    '<div class="row"><button class="btn small ghost" id="addRow">+ Add problem</button></div>' +
-    '<details style="margin-top:14px"><summary>How answers are checked</summary><div class="muted" style="margin-top:8px">' +
-      '• Equal numbers match: <code>3/4</code> = <code>0.75</code> = <code>¾</code>. Decimals are checked to the hundredth.<br>' +
-      '• <code>x = 4</code> and <code>4</code> both match. Units and $ are ignored (<code>12 cm</code> = <code>12</code>).<br>' +
-      '• Commas split an answer into pieces. If some pieces are right → <strong>partly correct</strong>. Example key <code>(2, 5)</code>, student types <code>(2, 6)</code>.<br>' +
-      '• For multi-part problems, make separate rows (5a, 5b, 5c) — each part gets its own blank.<br>' +
-      '• Accept other forms with <code>|</code>: <code>y = 2x + 3 | y = 3 + 2x</code>.<br>' +
-      '• "no solution" and "infinitely many" are understood in common wordings.</div></details>' +
+    '<div id="probs"></div>' +
+    '<button class="btn small ghost" id="addP">+ Add problem</button>' +
+    '<details style="margin-top:16px"><summary>How answers are checked</summary><div class="muted" style="margin-top:8px;line-height:1.7">' +
+      '• Equal numbers match: <code>3/4</code> = <code>0.75</code> = <code>¾</code> (checked to the hundredth). Units, $ and ° are ignored.<br>' +
+      '• A problem is <b>correct</b> when every blank is right, <b>partly correct</b> when some are.<br>' +
+      '• Inside one blank, commas make pieces: key <code>(2, 5)</code>, student <code>(2, 6)</code> → partly correct.<br>' +
+      '• Accept other forms with <code>|</code>: <code>2x + 3 | 3 + 2x</code>.<br>' +
+      '• Yes/No blanks show two buttons. Similarity statements accept any correct matching order.</div></details>' +
   '</div>');
 
-  var num = card.querySelector('#num'), ttl = card.querySelector('#ttl'), hid = card.querySelector('#hid');
-  num.value = hw.num; ttl.value = hw.title; hid.checked = !!hw.hidden;
-  num.oninput = function(){ hw.num = +num.value || hw.num; saveT(); };
-  ttl.oninput = function(){ hw.title = ttl.value; saveT(); };
-  hid.onchange = function(){ hw.hidden = hid.checked; saveT(); };
-  card.querySelector('#back').onclick = function(){ tState.editing = null; startTeacher(); };
+  var f = function(id){ return card.querySelector('#' + id); };
+  f('num').value = hw.num; f('ttl').value = hw.title || ''; f('due').value = hw.due || ''; f('hid').checked = !!hw.hidden;
+  f('num').oninput = function(){ hw.num = +f('num').value || hw.num; saveT(); };
+  f('ttl').oninput = function(){ hw.title = f('ttl').value; saveT(); };
+  f('due').oninput = function(){ hw.due = f('due').value; saveT(); };
+  f('hid').onchange = function(){ hw.hidden = f('hid').checked; saveT(); };
+  f('back').onclick = function(){ tS.editing = null; startTeacher(); };
 
-  var rows = card.querySelector('#rows');
-  function drawRows(){
-    rows.innerHTML = '';
-    if (!hw.problems.length) rows.appendChild(el('<div class="empty">No problems yet.</div>'));
+  var box = f('probs');
+  function draw(){
+    box.innerHTML = '';
+    if (!hw.problems.length) box.appendChild(el('<div class="empty">No problems yet.</div>'));
     hw.problems.forEach(function(p, i){
-      var r = el('<div class="keyrow"><input type="text" class="kl"><input type="text" class="ka" placeholder="Answer"><input type="text" class="knote" placeholder="e.g. Write as an ordered pair"><button class="x" title="Remove">×</button></div>');
-      var kl = r.querySelector('.kl'), ka = r.querySelector('.ka'), kn = r.querySelector('.knote');
-      kl.value = p.label; ka.value = p.answer; kn.value = p.note || '';
-      kl.oninput = function(){ p.label = kl.value.trim(); saveT(); };
-      ka.oninput = function(){ p.answer = ka.value; saveT(); };
-      kn.oninput = function(){ p.note = kn.value; saveT(); };
-      r.querySelector('.x').onclick = function(){ hw.problems.splice(i, 1); saveT(); drawRows(); };
-      rows.appendChild(r);
+      var ep = el('<div class="eprob">' +
+        '<div class="head"><label class="field">#<input type="text" class="pn"></label>' +
+        '<label class="field">Question (students see this)<textarea class="pq" rows="2"></textarea></label>' +
+        '<button class="x" title="Delete problem">×</button></div>' +
+        '<div class="efig"></div>' +
+        '<div class="eparts"><div class="epart hd"><span>Label before blank</span><span>Answer</span><span class="ep-post">After</span><span class="ep-type">Type</span><span></span></div><div class="pl"></div>' +
+        '<button class="btn small ghost ap">+ Blank</button></div>' +
+        '<label class="field" style="margin-top:10px">Note under the problem (optional)<input type="text" class="pnote" placeholder="e.g. Show your ratios on your paper."></label>' +
+      '</div>');
+      var pn = ep.querySelector('.pn'), pq = ep.querySelector('.pq'), pnote = ep.querySelector('.pnote');
+      pn.value = p.n; pq.value = p.q || ''; pnote.value = p.note || '';
+      pn.oninput = function(){ p.n = pn.value.trim(); saveT(); };
+      pq.oninput = function(){ p.q = pq.value; saveT(); };
+      pnote.oninput = function(){ p.note = pnote.value; saveT(); };
+      ep.querySelector('.x').onclick = function(){ if (confirm('Delete problem ' + p.n + '?')){ hw.problems.splice(i, 1); saveT(); draw(); } };
+
+      var fig = ep.querySelector('.efig');
+      function drawFig(){
+        fig.innerHTML = '';
+        if (p.img){
+          fig.appendChild(el('<img alt="">')).src = p.img;
+          var rm = el('<button class="btn small danger">Remove figure</button>');
+          rm.onclick = function(){ p.img = ''; saveT(); drawFig(); };
+          fig.appendChild(rm);
+        }
+        var up = el('<label class="btn small ghost" style="cursor:pointer">' + (p.img ? 'Replace figure' : '+ Figure (image)') + '<input type="file" accept="image/*" hidden></label>');
+        up.querySelector('input').onchange = function(e){
+          var file = e.target.files[0]; if (!file) return;
+          imageToDataURL(file, function(d){ p.img = d; saveT(); drawFig(); });
+        };
+        fig.appendChild(up);
+      }
+      drawFig();
+
+      var pl = ep.querySelector('.pl');
+      function drawParts(){
+        pl.innerHTML = '';
+        p.parts.forEach(function(part, j){
+          var r = el('<div class="epart"><input class="tinput a" placeholder="x ="><input class="tinput b" placeholder="25"><input class="tinput c ep-post" placeholder="°"><select class="tinput d ep-type"><option value="text">Type in</option><option value="choice">Yes / No</option></select><button class="x">×</button></div>');
+          var a = r.querySelector('.a'), b = r.querySelector('.b'), c = r.querySelector('.c'), d = r.querySelector('.d');
+          a.value = part.pre || ''; b.value = part.answer || ''; c.value = part.post || ''; d.value = part.type || 'text';
+          a.oninput = function(){ part.pre = a.value; saveT(); };
+          b.oninput = function(){ part.answer = b.value; saveT(); };
+          c.oninput = function(){ part.post = c.value; saveT(); };
+          d.onchange = function(){ part.type = d.value; if (d.value === 'choice' && !/^(yes|no)$/i.test(part.answer || '')){ part.answer = 'Yes'; b.value = 'Yes'; } saveT(); };
+          r.querySelector('.x').onclick = function(){ p.parts.splice(j, 1); saveT(); drawParts(); };
+          pl.appendChild(r);
+        });
+      }
+      drawParts();
+      ep.querySelector('.ap').onclick = function(){ p.parts.push({ pre: '', post: '', type: 'text', answer: '' }); saveT(); drawParts(); };
+      box.appendChild(ep);
     });
   }
-  drawRows();
+  draw();
+
   function addParsed(list){
-    if (!list.length){ alert("Couldn't find numbered answers. Try lines like \"1. 12\"."); return; }
-    if (card.querySelector('#replace').checked) hw.problems = list; else hw.problems = hw.problems.concat(list);
-    saveT(); drawRows();
+    if (!list.length){ alert("Couldn't find numbered answers. Try lines like \"1. x = 25\"."); return; }
+    hw.problems = f('replace').checked ? list : hw.problems.concat(list); saveT(); draw();
   }
-  card.querySelector('#doPaste').onclick = function(){ addParsed(parseKey(card.querySelector('#paste').value)); };
-  card.querySelector('#file').onchange = function(e){
-    var f = e.target.files[0]; if (!f) return;
+  f('doPaste').onclick = function(){ addParsed(parseKey(f('paste').value)); };
+  f('file').onchange = function(e){
+    var file = e.target.files[0]; if (!file) return;
     var rd = new FileReader();
-    if (/\.docx$/i.test(f.name)){
+    if (/\.docx$/i.test(file.name)){
       rd.onload = function(){
         loadMammoth().then(function(m){ return m.extractRawText({ arrayBuffer: rd.result }); })
-          .then(function(r){ card.querySelector('#paste').value = r.value; addParsed(parseKey(r.value)); })
-          .catch(function(){ alert("Couldn't read that Word file. Try copying the answers and pasting them instead."); });
+          .then(function(r){ f('paste').value = r.value; addParsed(parseKey(r.value)); })
+          .catch(function(){ alert("Couldn't read that Word file. Copy the answers and paste them instead."); });
       };
-      rd.readAsArrayBuffer(f);
-    } else {
-      rd.onload = function(){ card.querySelector('#paste').value = rd.result; addParsed(parseKey(/\.csv$/i.test(f.name) ? csvToLines(rd.result) : rd.result)); };
-      rd.readAsText(f);
-    }
+      rd.readAsArrayBuffer(file);
+    } else { rd.onload = function(){ f('paste').value = rd.result; addParsed(parseKey(rd.result)); }; rd.readAsText(file); }
     e.target.value = '';
   };
-  card.querySelector('#addRow').onclick = function(){
-    var lastNum = hw.problems.length ? (parseInt(hw.problems[hw.problems.length - 1].label) || 0) : 0;
-    hw.problems.push({ label: String(lastNum + 1), answer: '', note: '' }); saveT(); drawRows();
-    var ins = rows.querySelectorAll('.ka'); if (ins.length) ins[ins.length - 1].focus();
+  f('addP').onclick = function(){
+    var last = hw.problems.length ? (parseInt(hw.problems[hw.problems.length - 1].n) || 0) : 0;
+    hw.problems.push({ n: String(last + 1), q: '', img: '', note: '', parts: [{ pre: '', post: '', type: 'text', answer: '' }] });
+    saveT(); draw();
   };
   app.appendChild(card);
 }
-function csvToLines(t){
-  return String(t).split(/\r?\n/).map(function(l){
-    var i = l.indexOf(','); return i < 0 ? l : l.slice(0, i).trim() + '. ' + l.slice(i + 1).replace(/^"|"$/g, '').trim();
-  }).join('\n');
-}
 
 function buildPublished(){
-  var out = { version: 1, updated: new Date().toISOString(), classes: {} };
+  var out = { version: 2, updated: new Date().toISOString(), classes: {} };
   CLASSES.forEach(function(c){
     out.classes[c.id] = T.classes[c.id].filter(function(h){ return !h.hidden; })
       .sort(function(a, b){ return a.num - b.num; })
       .map(function(h){
         var salt = c.id + '-' + h.id;
-        return { id: h.id, num: h.num, title: h.title || '',
-          problems: h.problems.filter(function(p){ return p.label && String(p.answer).trim(); })
-            .map(function(p){ var o = { label: p.label, alts: HWC.buildAlts(p.answer, salt) }; if (p.note) o.note = p.note; return o; }) };
+        return { id: h.id, num: h.num, title: h.title || '', due: h.due || '',
+          problems: h.problems.map(function(p){
+            var parts = p.parts.filter(function(x){ return String(x.answer || '').trim(); }).map(function(x){
+              var o = { pre: x.pre || '', post: x.post || '', type: x.type || 'text', alts: HWC.buildAlts(x.answer, salt) };
+              if (o.type === 'choice') o.options = ['Yes', 'No'];
+              return o;
+            });
+            var o = { n: p.n, q: p.q || '', parts: parts };
+            if (p.img) o.img = p.img; if (p.note) o.note = p.note;
+            return o;
+          }).filter(function(p){ return p.parts.length; }) };
       });
   });
   return out;
@@ -530,34 +717,29 @@ function download(name, text, type){
   a.download = name; document.body.appendChild(a); a.click();
   setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500);
 }
-
 function renderPublish(){
-  var card = el('<div class="card"><h2>Publish to students</h2>' +
-    '<p class="muted">When your answers are ready: download <code>homework.js</code> and upload it to your GitHub repo (replace the old one). Students see the change in about a minute. The file only has scrambled answers — students can\'t read them.</p>' +
+  var card = el('<div class="card pad"><h2>Publish to students</h2>' +
+    '<p class="muted">Download <b>homework.js</b> and upload it to GitHub, replacing the old one. The answers inside are scrambled.</p>' +
     '<div class="row"><button class="btn" id="pub">Download homework.js</button><button class="btn ghost" id="prev">Preview as student</button></div>' +
-    '<hr style="border:none;border-top:1px solid var(--line);margin:16px 0">' +
-    '<p class="muted">Your answer keys are saved in this browser. Download a backup to keep them safe or move to another computer.</p>' +
+    '<hr class="sep"><p class="muted">Your answer keys are saved in this browser only. Keep a backup.</p>' +
     '<div class="row"><button class="btn small ghost" id="bak">Download backup</button><label class="btn small ghost" style="cursor:pointer">Load backup<input type="file" id="load" accept=".json" hidden></label></div></div>');
   card.querySelector('#pub').onclick = function(){
     download('homework.js', '// Homework Checker data — made in teacher mode. Answers are hashed.\nwindow.HOMEWORK_DATA = ' + JSON.stringify(buildPublished()) + ';\n', 'text/javascript');
   };
   card.querySelector('#prev').onclick = function(){ startStudent(buildPublished(), true); };
-  card.querySelector('#bak').onclick = function(){
-    download('homework-answer-keys-backup.json', JSON.stringify(T, null, 2), 'application/json');
-  };
+  card.querySelector('#bak').onclick = function(){ download('homework-answer-keys-backup.json', JSON.stringify(T, null, 2), 'application/json'); };
   card.querySelector('#load').onchange = function(e){
-    var f = e.target.files[0]; if (!f) return;
+    var file = e.target.files[0]; if (!file) return;
     var rd = new FileReader();
     rd.onload = function(){
       try {
-        var d = JSON.parse(rd.result);
-        if (!d.classes) throw 0;
+        var d = JSON.parse(rd.result); if (!d.classes) throw 0;
         if (!confirm('Replace the answer keys in this browser with this backup?')) return;
         CLASSES.forEach(function(c){ d.classes[c.id] = d.classes[c.id] || []; });
-        T = d; saveT(); tState.editing = null; startTeacher();
+        T = d; saveT(); tS.editing = null; startTeacher();
       } catch(err){ alert("That doesn't look like a Homework Checker backup."); }
     };
-    rd.readAsText(f); e.target.value = '';
+    rd.readAsText(file); e.target.value = '';
   };
   app.appendChild(card);
 }
