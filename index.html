@@ -82,6 +82,7 @@ h2{font-size:1.15rem;margin:0 0 14px}
 .seg button+button{border-left:1.5px solid var(--line2)}
 .seg button.on{background:var(--brand);color:var(--brand-ink)}
 .note{margin:10px 0 0 48px;font-size:.85rem;color:var(--muted)}
+.note.paper{margin-top:14px;background:var(--brand-soft);color:var(--ink2);border-radius:10px;padding:8px 12px;display:inline-block}
 .foot{margin:16px 0 0 48px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .btn{background:var(--brand);color:var(--brand-ink);border:none;border-radius:10px;padding:10px 18px;font-weight:600;cursor:pointer}
 .btn:hover{filter:brightness(1.05)}
@@ -177,6 +178,7 @@ var HWC = (function(){
     s = s.replace(/\bis\s+similar\s+to\b/g, '~').replace(/\btriangle\b/g, '');
     s = s.replace(/\s+/g, '');
     s = s.replace(/^answer:|^ans:/, '');
+    s = s.replace(/^[a-z]\([^)]*\)=(?=.)/, '');    // f(x)=20x, h(-8)=-13 -> answer
     s = s.replace(/[△δ∆]/g, '').replace(/[∼≈]/g, '~');
     s = s.replace(/^m?∠[a-z]{1,3}=/, '');          // m∠A = 50 -> 50
     // similarity statement: ABC~EFD == BCA~FDE == EFD~ABC ...
@@ -193,7 +195,7 @@ var HWC = (function(){
     if (/^(yes|y|yessimilar|similar|theyaresimilar)$/.test(s)) return 't:yes';
     if (/^(no|n|nosimilar|notsimilar|theyarenotsimilar)$/.test(s)) return 't:no';
     s = s.replace(/^[a-z]=(?=.)/, '');          // x=4 -> 4
-    s = s.replace(/^(.+?)=[a-z]$/, '$1');        // 4=x -> 4
+    s = s.replace(/^([^<>!]+?)=[a-z]$/, '$1');   // 4=x -> 4
     s = s.replace(/\$/g, '').replace(/°|degrees?$/g, '');
     // strip units: 12cm, 25%, 40ft², 3units
     s = s.replace(/^(-?\d*\.?\d+(?:\/\d*\.?\d+)?)(?:[a-z]{2,}(?:\^?[23])?|%|²|³)$/, '$1');
@@ -204,6 +206,8 @@ var HWC = (function(){
     if (/^(no(real)?solutions?|none|∅|nosol)$/.test(s)) return 't:nosolution';
     if (/^(infinite(ly)?(many)?(solutions?)?|allrealnumbers|allreals|manysolutions)$/.test(s)) return 't:infinite';
     if (/^(one|1|exactlyone)solutions?$/.test(s)) return 't:onesolution';
+    // tidy numbers inside text: 2.50<=y -> 2.5<=y
+    s = s.replace(/\d*\.?\d+/g, function(n){ return String(parseFloat(n)); });
     return 't:' + s;
   }
 
@@ -233,10 +237,21 @@ var HWC = (function(){
   }
 
   // Student: returns 'correct' | 'partial' | 'incorrect' | 'empty'
-  function check(input, alts, salt){
+  function check(input, alts, salt, anyOrder){
     var mine = pieces(input).map(function(p){ return hash(salt, p); });
     if (!mine.length) return 'empty';
     var partial = false;
+    if (anyOrder){
+      var uniq = function(a){ return a.filter(function(h, i){ return a.indexOf(h) === i; }); };
+      var m2 = uniq(mine);
+      for (var k = 0; k < alts.length; k++){
+        var a2 = uniq(alts[k]);
+        var hit = m2.filter(function(h){ return a2.indexOf(h) > -1; }).length;
+        if (hit === a2.length && m2.length === a2.length) return 'correct';
+        if (hit > 0) partial = true;
+      }
+      return partial ? 'partial' : 'incorrect';
+    }
     for (var i = 0; i < alts.length; i++){
       var alt = alts[i], right = 0;
       for (var j = 0; j < alt.length; j++) if (mine[j] === alt[j]) right++;
@@ -347,7 +362,7 @@ function pickHW(){
 }
 
 function checkProblem(p, vals, salt){
-  var each = p.parts.map(function(part, j){ return HWC.check(vals[j] || '', part.alts, salt); });
+  var each = p.parts.map(function(part, j){ return HWC.check(vals[j] || '', part.alts, salt, part.order === 'any'); });
   if (each.some(function(r){ return r === 'empty'; })) return { overall: 'empty', each: each };
   if (each.every(function(r){ return r === 'correct'; })) return { overall: 'correct', each: each };
   if (each.some(function(r){ return r === 'correct' || r === 'partial'; })) return { overall: 'partial', each: each };
@@ -380,7 +395,8 @@ function showHW(){
       (p.img ? '<div class="fig"><img alt="Figure for problem ' + esc(p.n) + '" src="' + p.img + '"></div>' : '') +
       '<div class="answers"></div>' +
       (p.note ? '<div class="note">' + esc(p.note) + '</div>' : '') +
-      '<div class="foot"><button class="btn">Check</button><div class="result" role="status" aria-live="polite"></div></div>' +
+      (p.parts.length ? '<div class="foot"><button class="btn">Check</button><div class="result" role="status" aria-live="polite"></div></div>'
+        : '<div class="note paper">' + ICON.info.replace('<svg', '<svg style="width:16px;height:16px;vertical-align:-3px;margin-right:4px"') + 'Answer this one on your paper. It is checked in class.</div>') +
     '</section>');
     var box = card.querySelector('.answers'), res = card.querySelector('.result');
     var vals = p.parts.map(function(_, j){ return saved[i + '-' + j] || ''; });
@@ -393,7 +409,7 @@ function showHW(){
     }
     p.parts.forEach(function(part, j){
       var b;
-      if (part.type === 'choice'){
+      if (part.type === 'choice' || part.options){
         var opts = part.options || ['Yes', 'No'];
         b = el('<div class="blank">' + (part.pre ? '<span class="pre">' + esc(part.pre) + '</span>' : '') + '<div class="seg" role="group"></div>' + (part.post ? '<span class="post">' + esc(part.post) + '</span>' : '') + '</div>');
         var seg = b.querySelector('.seg');
@@ -430,7 +446,7 @@ function showHW(){
       if (r.overall !== 'empty') status[i] = r.overall; else delete status[i];
       updateProgress();
     }
-    card.querySelector('.btn').onclick = run;
+    if (p.parts.length) card.querySelector('.btn').onclick = run;
     card._run = run; card._filled = function(){ return vals.some(function(v){ return String(v).trim(); }); };
     app.appendChild(card);
   });
@@ -446,7 +462,7 @@ function showHW(){
   app.appendChild(bottom);
 
   function updateProgress(){
-    var n = problems.length, g = 0, pt = 0, b = 0;
+    var n = problems.filter(function(p){ return p.parts.length; }).length || 1, g = 0, pt = 0, b = 0;
     Object.keys(status).forEach(function(k){ if (status[k] === 'correct') g++; else if (status[k] === 'partial') pt++; else b++; });
     prog.querySelector('.g').style.width = (g / n * 100) + '%';
     prog.querySelector('.p').style.width = (pt / n * 100) + '%';
@@ -461,6 +477,7 @@ function showHW(){
 }
 
 /* ===================== TEACHER ===================== */
+var TYPES = { text: {}, set: { order: 'any' }, yn: { options: ['Yes', 'No'] }, choice: { options: ['Yes', 'No'] }, dc: { options: ['Discrete', 'Continuous'] }, ln: { options: ['Linear', 'Nonlinear'] } };
 var TKEY = 'hwc-teacher-v2';
 var T = store(TKEY);
 if (!T){
@@ -591,7 +608,8 @@ function renderEditor(){
       '• A problem is <b>correct</b> when every blank is right, <b>partly correct</b> when some are.<br>' +
       '• Inside one blank, commas make pieces: key <code>(2, 5)</code>, student <code>(2, 6)</code> → partly correct.<br>' +
       '• Accept other forms with <code>|</code>: <code>2x + 3 | 3 + 2x</code>.<br>' +
-      '• Yes/No blanks show two buttons. Similarity statements accept any correct matching order.</div></details>' +
+      '• Button types: Yes/No, Discrete/Continuous, Linear/Nonlinear. <b>List, any order</b> accepts the numbers in any order (for domain and range lists). A problem with no blanks shows as "answer on your paper."<br>' +
+      '•  Similarity statements accept any correct matching order.</div></details>' +
   '</div>');
 
   var f = function(id){ return card.querySelector('#' + id); };
@@ -645,13 +663,13 @@ function renderEditor(){
       function drawParts(){
         pl.innerHTML = '';
         p.parts.forEach(function(part, j){
-          var r = el('<div class="epart"><input class="tinput a" placeholder="x ="><input class="tinput b" placeholder="25"><input class="tinput c ep-post" placeholder="°"><select class="tinput d ep-type"><option value="text">Type in</option><option value="choice">Yes / No</option></select><button class="x">×</button></div>');
+          var r = el('<div class="epart"><input class="tinput a" placeholder="x ="><input class="tinput b" placeholder="25"><input class="tinput c ep-post" placeholder="°"><select class="tinput d ep-type"><option value="text">Type in</option><option value="set">List, any order</option><option value="yn">Yes / No</option><option value="dc">Discrete / Continuous</option><option value="ln">Linear / Nonlinear</option></select><button class="x">×</button></div>');
           var a = r.querySelector('.a'), b = r.querySelector('.b'), c = r.querySelector('.c'), d = r.querySelector('.d');
-          a.value = part.pre || ''; b.value = part.answer || ''; c.value = part.post || ''; d.value = part.type || 'text';
+          a.value = part.pre || ''; b.value = part.answer || ''; c.value = part.post || ''; d.value = part.type === 'choice' ? 'yn' : (part.type || 'text');
           a.oninput = function(){ part.pre = a.value; saveT(); };
           b.oninput = function(){ part.answer = b.value; saveT(); };
           c.oninput = function(){ part.post = c.value; saveT(); };
-          d.onchange = function(){ part.type = d.value; if (d.value === 'choice' && !/^(yes|no)$/i.test(part.answer || '')){ part.answer = 'Yes'; b.value = 'Yes'; } saveT(); };
+          d.onchange = function(){ part.type = d.value; var op = (TYPES[d.value] || {}).options; if (op && op.map(function(o){ return o.toLowerCase(); }).indexOf(String(part.answer || '').trim().toLowerCase()) < 0){ part.answer = op[0]; b.value = op[0]; } saveT(); };
           r.querySelector('.x').onclick = function(){ p.parts.splice(j, 1); saveT(); drawParts(); };
           pl.appendChild(r);
         });
@@ -699,14 +717,16 @@ function buildPublished(){
         return { id: h.id, num: h.num, title: h.title || '', due: h.due || '',
           problems: h.problems.map(function(p){
             var parts = p.parts.filter(function(x){ return String(x.answer || '').trim(); }).map(function(x){
-              var o = { pre: x.pre || '', post: x.post || '', type: x.type || 'text', alts: HWC.buildAlts(x.answer, salt) };
-              if (o.type === 'choice') o.options = ['Yes', 'No'];
+              var ty = TYPES[x.type] || TYPES.text;
+              var o = { pre: x.pre || '', post: x.post || '', type: ty.options ? 'choice' : 'text', alts: HWC.buildAlts(x.answer, salt) };
+              if (ty.options) o.options = ty.options;
+              if (ty.order) o.order = ty.order;
               return o;
             });
             var o = { n: p.n, q: p.q || '', parts: parts };
             if (p.img) o.img = p.img; if (p.note) o.note = p.note;
             return o;
-          }).filter(function(p){ return p.parts.length; }) };
+          }).filter(function(p){ return p.parts.length || p.q; }) };
       });
   });
   return out;
